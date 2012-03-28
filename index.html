@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Spongy Castle by rtyley</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Spongy Castle</h1>
+        <p>a repackage of Bouncy Castle for Android</p>
+        <p class="view"><a href="https://github.com/rtyley/spongycastle">View the Project on GitHub <small>rtyley/spongycastle</small></a></p>
+        <ul>
+          <li><a href="https://github.com/rtyley/spongycastle/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/rtyley/spongycastle/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/rtyley/spongycastle">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p>This project aims to be a full replacement for the crippled versions of the Bouncy Castle cryptographic libraries which ship with Android. As noted here:</p>
+
+<p><a href="http://code.google.com/p/android/issues/detail?id=3280">http://code.google.com/p/android/issues/detail?id=3280</a></p>
+
+<p>...the Android platform unfortunately incorporates a cut-down version of Bouncy Castle, which also makes installing an updated version of the libraries difficult due to classloader conflicts.</p>
+
+<p>Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android:</p>
+
+<ul>
+<li>all package names have been moved from org.bouncycastle.* to org.spongycastle.* - so no classloader conflicts</li>
+<li>the Java Security API Provider name is now <strong>SC</strong> rather than <strong>BC</strong>
+</li>
+</ul><p>No class names have been changed, so the BouncyCastleProvider class remains Bouncy, not Spongy, but moves to the org.spongycastle.jce.provider package. </p>
+
+<h4>Downloads</h4>
+
+<p>You can directly download the latest jar <a href="http://search.maven.org/remotecontent?filepath=com/madgag/scprov-jdk15/1.46.99.3-UNOFFICIAL-ROBERTO-RELEASE/scprov-jdk15-1.46.99.3-UNOFFICIAL-ROBERTO-RELEASE.jar">here</a> (this is just a link to the published artifact in Maven Central).</p>
+
+<h4>Using Spongy Castle</h4>
+
+<p>You register it just the same as the standard BouncyCastleProvider:</p>
+
+<pre><code>static {
+    Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
+}
+</code></pre>
+
+<p>You can see an example of Spongy Castle in active use in the <a href="https://github.com/rtyley/toy-android-ssh-agent">toy-android-ssh-agent</a> project:</p>
+
+<p><a href="https://github.com/rtyley/toy-android-ssh-agent/blob/d768a9ba853272d396f3b528eb991ea38244e6bc/src/main/java/com/madgag/ssh/toysshagent/ToyAuthAgentService.java#L28">https://github.com/rtyley/toy-android-ssh-agent/blob/d768a9ba853272d396f3b528eb991ea38244e6bc/src/main/java/com/madgag/ssh/toysshagent/ToyAuthAgentService.java#L28</a></p>
+
+<p>There's also an even simpler demo project showing how to include Spongy Castle in a vanilla Eclipse project:</p>
+
+<p><a href="https://github.com/rtyley/spongycastle-eclipse#readme">https://github.com/rtyley/spongycastle-eclipse#readme</a></p>
+
+<h4>Maven</h4>
+
+<p>Spongy Castle artifacts have been published to Maven Central, you can use <a href="http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.madgag%22%20AND%20a%3A%22scprov-jdk15%22">scprov-jdk15</a> as a drop-in replacement for the official Bouncy Castle artifact <a href="http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.bouncycastle%22%20a%3A%22bcprov-jdk15%22">bcprov-jdk15</a>.</p>
+
+<p>I suggest you use the <a href="http://code.google.com/p/maven-android-plugin/">android-maven-plugin</a> to make the most of this :-)</p>
+
+<h4>Licence</h4>
+
+<p>Bouncy Castle uses an <a href="http://www.bouncycastle.org/licence.html">adaptation of the MIT X11 License</a> and as Spongy Castle is a simple re-package of Bouncy Castle, you should consider it to be licenced under those same terms.</p>
+
+<h4>Projects using Spongy Castle</h4>
+
+<p><a href="http://martijno.blogspot.com/2011/07/jmrtd-for-android.html">JMRTD for Android</a></p>
+
+<p><a href="https://github.com/zdia/gorilla/wiki/Gorilla-for-Android">Gorilla for Android</a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/rtyley">rtyley</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
