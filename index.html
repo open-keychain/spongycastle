@@ -17,17 +17,20 @@
     <div class="wrapper">
       <header>
         <h1>Spongy Castle</h1>
-        <p>repackage of Bouncy Castle for Android</p>
+        <p>repackage of <a href="http://www.bouncycastle.org/java.html">Bouncy Castle</a> for Android</p>
         <p class="view"><a href="https://github.com/rtyley/spongycastle">View the Project on GitHub <small>rtyley/spongycastle</small></a></p>
         <ul>
-          <li><a href="http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.madgag%22%20AND%20a%3A%22scprov-jdk15on%22">Maven <strong>Artifact</strong></a></li>
-          <li><a href="http://search.maven.org/remotecontent?filepath=com/madgag/scprov-jdk15on/1.47.0.1/scprov-jdk15on-1.47.0.1.jar">Download <strong>JAR File</strong></a></li>
+          <li><a href="http://search.maven.org/#search|ga|1|g:com.madgag AND v:1.47.0.2">Maven <strong>Artifacts</strong></a></li>
+          <li><a href="#downloads">Download <strong>JAR Files</strong></a></li>
           <li><a href="https://github.com/rtyley/spongycastle">Fork On <strong>GitHub</strong></a></li>
         </ul>
       </header>
       <section>
+
+
+
 <h4>Why?</h4>
-        <p>The Android platform unfortunately incorporates a <a href="http://code.google.com/p/android/issues/detail?id=3280">cut-down</a> version of Bouncy Castle - as well as being crippled, it also makes installing an updated version of the libraries difficult due to classloader conflicts.</p>
+        <p>The Android platform unfortunately ships with a <a href="http://code.google.com/p/android/issues/detail?id=3280">cut-down</a> version of Bouncy Castle - as well as being crippled, it also makes installing an updated version of the libraries difficult due to classloader conflicts.</p>
 
 <p>Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android:</p>
 
@@ -38,6 +41,20 @@
 <li>no class names change, so the BouncyCastleProvider class remains Bouncy, not Spongy, but moves to the <strong>org.spongycastle.jce.provider</strong> package.
 </li>
 </ul>
+
+<h4 id="downloads">Download</h4>
+
+<p>Spongy Castle artifacts are published on Maven Central. Use the <a href="http://code.google.com/p/maven-android-plugin/">android-maven-plugin</a> to make the most of this, or click the <em>jar</em> links below - make sure you include all dependencies:</p>
+
+<ul>
+<li><strong><a href="http://search.maven.org/#search|ga|1|g:com.madgag AND a:sc-light-jdk15on">sc-light-jdk15on</a></strong> (<a href="http://search.maven.org/remotecontent?filepath=com/madgag/sc-light-jdk15on/1.47.0.2/sc-light-jdk15on-1.47.0.2.jar">jar</a>) - Core lightweight API</li>
+<li><a href="http://search.maven.org/#search|ga|1|g:com.madgag AND a:scprov-jdk15on">scprov-jdk15on</a> (<a href="http://search.maven.org/remotecontent?filepath=com/madgag/scprov-jdk15on/1.47.0.2/scprov-jdk15on-1.47.0.2.jar">jar</a>) - <a href="http://docs.oracle.com/javase/1.4.2/docs/guide/security/CryptoSpec.html">JCE</a> provider (requires sc-light-jdk15on)</li>
+<li><a href="http://search.maven.org/#search|ga|1|g:com.madgag AND a:scpkix-jdk15on">scpkix-jdk15on</a> (<a href="http://search.maven.org/remotecontent?filepath=com/madgag/scpkix-jdk15on/1.47.0.2/scpkix-jdk15on-1.47.0.2.jar">jar</a>) - PKIX, CMS, EAC, TSP, PKCS, OCSP, CMP, and CRMF APIs (requires scprov-jdk15on)</li>
+<li><a href="http://search.maven.org/#search|ga|1|g:com.madgag AND a:sc-bzip2">sc-bzip2</a> (<a href="http://search.maven.org/remotecontent?filepath=com/madgag/sc-bzip2/1.47.0.2/sc-bzip2-1.47.0.2.jar">jar</a>) - BZIP2 compression library</li>
+<li><a href="http://search.maven.org/#search|ga|1|g:com.madgag AND a:scpg-jdk15on">scpg-jdk15on</a> (<a href="http://search.maven.org/remotecontent?filepath=com/madgag/scpg-jdk15on/1.47.0.2/scpg-jdk15on-1.47.0.2.jar">jar</a>) - OpenPGP API (requires scprov-jdk15on, sc-bzip2)</li>
+<li><a href="http://search.maven.org/#search|ga|1|g:com.madgag AND a:scmail-jdk15on">scmail-jdk15on</a> (<a href="http://search.maven.org/remotecontent?filepath=com/madgag/scmail-jdk15on/1.47.0.2/scmail-jdk15on-1.47.0.2.jar">jar</a>) - S/MIME API (<a href="https://github.com/rtyley/spongycastle/issues/4">alpha</a>, requires scpkix-jdk15on, <a href="http://www.oracle.com/technetwork/java/javamail/index.html">java-mail</a> v1.4.5)</li>
+</ul>
+
 <h4>Using Spongy Castle</h4>
 
 <p>Register it just like the standard BouncyCastleProvider:</p>
@@ -47,11 +64,7 @@
 }
 </code></pre>
 
-<p>Ther's an example of Spongy Castle in active use in the <a href="https://github.com/rtyley/toy-android-ssh-agent/blob/d768a9ba853272d396f3b528eb991ea38244e6bc/src/main/java/com/madgag/ssh/toysshagent/ToyAuthAgentService.java#L28-48">ToyAuthAgentService</a> of the <a href="https://github.com/rtyley/toy-android-ssh-agent">toy-android-ssh-agent</a> project. There's also an <a href="https://github.com/rtyley/spongycastle-eclipse#readme">even simpler demo Eclipse project</a> showing how to include Spongy Castle in a vanilla Eclipse project.</p>
-
-<h4>Maven</h4>
-
-<p>Spongy Castle artifacts are published on Maven Central: <a href="http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.madgag%22%20AND%20a%3A%22scprov-jdk15on%22">scprov-jdk15on</a> is a drop-in replacement for <a href="http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.bouncycastle%22%20a%3A%22bcprov-jdk15on%22">bcprov-jdk15on</a>, the official Bouncy Castle artifact . Use the <a href="http://code.google.com/p/maven-android-plugin/">android-maven-plugin</a> to make the most of this :-)</p>
+<p>There's an example of Spongy Castle in active use in the <a href="https://github.com/rtyley/toy-android-ssh-agent/blob/d768a9ba853272d396f3b528eb991ea38244e6bc/src/main/java/com/madgag/ssh/toysshagent/ToyAuthAgentService.java#L28-48">ToyAuthAgentService</a> of the <a href="https://github.com/rtyley/toy-android-ssh-agent">toy-android-ssh-agent</a> project. There's also an <a href="https://github.com/rtyley/spongycastle-eclipse#readme">even simpler demo Eclipse project</a> showing how to include Spongy Castle in a vanilla Eclipse project.</p>
 
 <h4>Licence</h4>
 
