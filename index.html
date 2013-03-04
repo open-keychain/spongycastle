@@ -57,10 +57,14 @@
 
 <h4>Using Spongy Castle</h4>
 
-<p>Register it just like the standard BouncyCastleProvider:</p>
+<p>Register it just like the standard BouncyCastleProvider, but use
+<a href="http://developer.android.com/reference/java/security/Security.html#insertProviderAt(java.security.Provider, int)"><code>insertProviderAt()</code></a>
+rather than
+<a href="http://developer.android.com/reference/java/security/Security.html#addProvider(java.security.Provider)"><code>addProvider()</code></a>, to ensure that 
+<a href="https://github.com/rtyley/spongycastle/issues/10">Spongy Castle is used in preference to any other security provider</a> on the device:</p>
 
 <pre><code>static {
-    Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
+    Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
 }
 </code></pre>
 
