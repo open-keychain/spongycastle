@@ -52,7 +52,7 @@ subprojects {
     }
 }
 
-test.dependsOn([':core:test', ':prov:test', ':pkix:test', ':mail:test', 'pg:test'])
+test.dependsOn([':core:test', ':prov:test', ':pkix:test', 'pg:test'])
 
 cobertura {
    coverageDirs = [
