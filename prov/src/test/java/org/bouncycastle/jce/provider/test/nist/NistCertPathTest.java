@@ -781,7 +781,9 @@ public class NistCertPathTest
         
         try
         {
-            InputStream in = new FileInputStream(getPkitsHome() + "/certs/" + certName + ".crt");
+            String path = getPkitsHome() + "/certs/" + certName + ".crt";
+            System.out.println("Grabbing " + path);
+            InputStream in = new FileInputStream(path);
             
             CertificateFactory fact = CertificateFactory.getInstance("X.509", "BC");
             
@@ -810,7 +812,9 @@ public class NistCertPathTest
         
         try
         {
-            InputStream in = new FileInputStream(getPkitsHome() + "/crls/" + crlName + ".crl");
+            String path = getPkitsHome() + "/crls/" + crlName + ".crl";
+            System.out.println("Grabbing "+path);
+            InputStream in = new FileInputStream(path);
             
             CertificateFactory fact = CertificateFactory.getInstance("X.509", "BC");
             

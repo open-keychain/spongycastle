@@ -18,7 +18,10 @@ public class AllTests
         
         for (int i = 0; i != tests.length; i++)
         {
-            SimpleTestResult  result = (SimpleTestResult)tests[i].perform();
+            org.bouncycastle.util.test.Test test = tests[i];
+            System.err.println(test.getName());
+            SimpleTestResult result = (SimpleTestResult) test.perform();
+            System.err.println(test.getName()+" "+result);
             
             if (!result.isSuccessful())
             {
