@@ -37,6 +37,10 @@ import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.x509.X509Extension;
 import org.bouncycastle.x509.extension.X509ExtensionUtil;
 
+import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.assertThat;
+
 /**
  * NIST CertPath test data for RFC 3280
  */
@@ -650,7 +654,9 @@ public class NistCertPathTest
         catch (CertPathValidatorException e)
         {
             assertEquals(index, e.getIndex());
+            assertThat(e.getMessage(), startsWith(mesStart));
             assertTrue(e.getMessage().startsWith(mesStart));
+            assertThat(e.getMessage(), endsWith(mesEnd));
             assertTrue(e.getMessage().endsWith(mesEnd));
         }
     }
