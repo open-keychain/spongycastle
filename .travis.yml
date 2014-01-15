@@ -1,0 +1,16 @@
+language: java
+
+jdk:
+  - openjdk7
+
+sudo: false
+
+install:
+  - TERM=dumb gradle assemble
+
+script:
+  - TERM=dumb gradle check --debug
+
+notifications:
+  email:
+    - roberto.tyley@gmail.com
