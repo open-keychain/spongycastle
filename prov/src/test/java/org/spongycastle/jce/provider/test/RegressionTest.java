@@ -65,7 +65,7 @@ public class RegressionTest
         new MultiCertStoreTest(),
         new NoekeonTest(),
         new AttrCertSelectorTest(),
-        new SerialisationTest(),
+        // new SerialisationTest(), // Attempts to deserialise a org.bouncycastle class
         new SigNameTest(),
         new MQVTest(),
         new CMacTest(),
