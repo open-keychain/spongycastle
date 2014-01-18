@@ -12,6 +12,12 @@ import org.bouncycastle.util.test.SimpleTestResult;
 public class AllTests
     extends TestCase
 {
+    public void setUp()
+    {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
+
     public void testJCE()
     {   
         org.bouncycastle.util.test.Test[] tests = RegressionTest.tests;
