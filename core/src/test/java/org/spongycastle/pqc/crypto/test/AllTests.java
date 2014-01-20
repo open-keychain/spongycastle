@@ -14,15 +14,17 @@ public class AllTests
         
         for (int i = 0; i != tests.length; i++)
         {
-            SimpleTestResult  result = (SimpleTestResult)tests[i].perform();
+            org.spongycastle.util.test.Test test = tests[i];
+            SimpleTestResult  result = (SimpleTestResult) test.perform();
 
             if (!result.isSuccessful())
             {
+                System.out.println("Test "+test+" Result "+result);
                 fail(result.toString());
             }
         }
     }
-    
+
     public static void main (String[] args)
     {
         junit.textui.TestRunner.run(suite());
