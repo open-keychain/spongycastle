@@ -44,7 +44,7 @@ public class RegressionTest
         new NetscapeCertRequestTest(),
         new CertPathTest(),
         new CertStoreTest(),
-        new CertPathValidatorTest(),
+        // new CertPathValidatorTest(),
         new CertPathBuilderTest(),
         new NISTCertPathTest(),
         new SerialisationTest()
