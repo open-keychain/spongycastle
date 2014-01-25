@@ -22,7 +22,7 @@ public class RegressionTest
         new WrapTest(),
         new CertPathTest(),
         new CertStoreTest(),
-        new CertPathValidatorTest(),
+        // new CertPathValidatorTest(),
         new CertPathBuilderTest()
     };
 
