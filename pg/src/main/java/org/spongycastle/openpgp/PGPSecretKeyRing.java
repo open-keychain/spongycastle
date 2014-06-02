@@ -36,7 +36,7 @@ public class PGPSecretKeyRing
     List keys;
     List extraPubKeys;
 
-    PGPSecretKeyRing(List keys)
+    public PGPSecretKeyRing(List keys)
     {
         this(keys, new ArrayList());
     }
