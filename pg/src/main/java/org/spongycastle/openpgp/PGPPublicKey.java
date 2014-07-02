@@ -18,6 +18,7 @@ import org.spongycastle.bcpg.ECPublicBCPGKey;
 import org.spongycastle.bcpg.ElGamalPublicBCPGKey;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.PublicKeyPacket;
+import org.spongycastle.bcpg.PublicSubkeyPacket;
 import org.spongycastle.bcpg.RSAPublicBCPGKey;
 import org.spongycastle.bcpg.TrustPacket;
 import org.spongycastle.bcpg.UserAttributePacket;
@@ -924,6 +925,35 @@ public class PGPPublicKey
 
         return returnKey;
     }
+
+    /**
+     * Add a subkey binding certification, changing the key type from master to subkey.
+     *
+     * @param key the key the revocation is to be added to.
+     * @param certification the key signature to be added.
+     * @return the new changed public key object.
+     */
+    public static PGPPublicKey addSubkeyBindingCertification(
+            PGPPublicKey    key,
+            PGPSignature    certification)
+    {
+        // make sure no subSigs are previously present
+        if (!key.isMasterKey())
+        {
+            throw new IllegalArgumentException("key is already a subkey!");
+        }
+
+        PGPPublicKey    returnKey = new PGPPublicKey(key);
+
+        // change the packet type from key to subkey
+        returnKey.publicPk = new PublicSubkeyPacket(
+                returnKey.publicPk.getAlgorithm(), returnKey.publicPk.getTime(), returnKey.publicPk.getKey());
+
+        returnKey.subSigs = new ArrayList();
+        returnKey.subSigs.add(certification);
+        return returnKey;
+    }
+
 
     /**
      * Add a revocation or some other key certification to a key.
