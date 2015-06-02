@@ -289,6 +289,18 @@ public class BCPGInputStream
         return null;
     }
 
+    public Long findDataLength() {
+        if (in instanceof PartialInputStream) {
+            try {
+                ((PartialInputStream) in).skipToEnd();
+            } catch (IOException e) {
+                return null;
+            }
+            return getBodyLengthIfAvailable();
+        }
+        return null;
+    }
+
     /**
      * a stream that overlays our input stream, allowing the user to only read a segment of it.
      *
@@ -333,7 +345,8 @@ public class BCPGInputStream
             }
         }
 
-        private long getBodyLength() {
+        private long getBodyLength()
+        {
             return partial ? 0L : totalDataLength;
         }
 
@@ -366,7 +379,27 @@ public class BCPGInputStream
                 dataLength = 1 << (l & 0x1f);
             }
 
+            totalDataLength += dataLength;
+
             return dataLength;
+        }
+
+        public void skipToEnd()
+                throws IOException
+        {
+            do
+            {
+                if (dataLength != 0)
+                {
+                    long readLen = in.skip(dataLength);
+                    if (readLen < 0)
+                    {
+                        throw new EOFException("premature end of stream in PartialInputStream");
+                    }
+                    dataLength -= readLen;
+                }
+            }
+            while (partial && loadDataLength() >= 0);
         }
 
         public int read(byte[] buf, int offset, int len)
