@@ -19,6 +19,7 @@ public class RegressionTest
         new DHTest(),
         new ElGamalTest(),
         new DSATest(),
+        new EdDSATest(),
         new ECTest(),
         new DeterministicDSATest(),
         new GOST3410Test(),
