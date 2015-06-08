@@ -43,6 +43,8 @@ public class PubringDump
             return "ELGAMAL_GENERAL";
         case PublicKeyAlgorithmTags.DIFFIE_HELLMAN:
             return "DIFFIE_HELLMAN";
+        case PublicKeyAlgorithmTags.EDDSA:
+            return "EDDSA";
         }
 
         return "unknown";
