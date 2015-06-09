@@ -14,7 +14,8 @@ public class PGPParsingTest
     public void performTest()
         throws Exception
     {
-        PGPPublicKeyRingCollection pubRingCollection = new PGPPublicKeyRingCollection(PGPUtil.getDecoderStream(this.getClass().getResourceAsStream("bigpub.asc")), new JcaKeyFingerprintCalculator());
+        PGPPublicKeyRingCollection pubRingCollection1 = new PGPPublicKeyRingCollection(PGPUtil.getDecoderStream(this.getClass().getResourceAsStream("bigpub.asc")), new JcaKeyFingerprintCalculator());
+        PGPPublicKeyRingCollection pubRingCollection2 = new PGPPublicKeyRingCollection(PGPUtil.getDecoderStream(this.getClass().getResourceAsStream("eddsa.asc")), new JcaKeyFingerprintCalculator());
     }
 
     public String getName()
