@@ -1,0 +1,367 @@
+package org.spongycastle.jcajce.provider.asymmetric.ec;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.InvalidKeyException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
+import org.spongycastle.asn1.ASN1EncodableVector;
+import org.spongycastle.asn1.ASN1Encoding;
+import org.spongycastle.asn1.ASN1Integer;
+import org.spongycastle.asn1.ASN1Primitive;
+import org.spongycastle.asn1.ASN1Sequence;
+import org.spongycastle.asn1.DERSequence;
+import org.spongycastle.crypto.CipherParameters;
+import org.spongycastle.crypto.DSA;
+import org.spongycastle.crypto.Digest;
+import org.spongycastle.crypto.digests.NullDigest;
+import org.spongycastle.crypto.digests.RIPEMD160Digest;
+import org.spongycastle.crypto.digests.SHA1Digest;
+import org.spongycastle.crypto.digests.SHA224Digest;
+import org.spongycastle.crypto.digests.SHA256Digest;
+import org.spongycastle.crypto.digests.SHA384Digest;
+import org.spongycastle.crypto.digests.SHA512Digest;
+import org.spongycastle.crypto.params.ParametersWithRandom;
+import org.spongycastle.crypto.signers.EdDSASigner;
+import org.spongycastle.crypto.signers.ECNRSigner;
+import org.spongycastle.crypto.signers.HMacDSAKCalculator;
+import org.spongycastle.jcajce.provider.asymmetric.util.DSABase;
+import org.spongycastle.jcajce.provider.asymmetric.util.DSAEncoder;
+import org.spongycastle.jcajce.provider.asymmetric.util.ECUtil;
+
+public class EdDSASpi
+    extends DSABase
+{
+    EdDSASpi(Digest digest, DSA signer, DSAEncoder encoder)
+    {
+        super(digest, signer, encoder);
+    }
+
+    protected void engineInitVerify(PublicKey publicKey)
+        throws InvalidKeyException
+    {
+        CipherParameters param = ECUtil.generatePublicKeyParameter(publicKey);
+
+        digest.reset();
+        signer.init(false, param);
+    }
+
+    protected void engineInitSign(
+        PrivateKey privateKey)
+        throws InvalidKeyException
+    {
+        CipherParameters param = ECUtil.generatePrivateKeyParameter(privateKey);
+
+        digest.reset();
+
+        if (appRandom != null)
+        {
+            signer.init(true, new ParametersWithRandom(param, appRandom));
+        }
+        else
+        {
+            signer.init(true, param);
+        }
+    }
+
+    static public class edDSA
+        extends EdDSASpi
+    {
+        public edDSA()
+        {
+            super(new SHA1Digest(), new EdDSASigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDetDSA
+        extends EdDSASpi
+    {
+        public edDetDSA()
+        {
+            super(new SHA1Digest(), new EdDSASigner(new HMacDSAKCalculator(new SHA1Digest())), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDSAnone
+        extends EdDSASpi
+    {
+        public edDSAnone()
+        {
+            super(new NullDigest(), new EdDSASigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDSA224
+        extends EdDSASpi
+    {
+        public edDSA224()
+        {
+            super(new SHA224Digest(), new EdDSASigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDetDSA224
+        extends EdDSASpi
+    {
+        public edDetDSA224()
+        {
+            super(new SHA224Digest(), new EdDSASigner(new HMacDSAKCalculator(new SHA224Digest())), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDSA256
+        extends EdDSASpi
+    {
+        public edDSA256()
+        {
+            super(new SHA256Digest(), new EdDSASigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDetDSA256
+        extends EdDSASpi
+    {
+        public edDetDSA256()
+        {
+            super(new SHA256Digest(), new EdDSASigner(new HMacDSAKCalculator(new SHA256Digest())), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDSA384
+        extends EdDSASpi
+    {
+        public edDSA384()
+        {
+            super(new SHA384Digest(), new EdDSASigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDetDSA384
+        extends EdDSASpi
+    {
+        public edDetDSA384()
+        {
+            super(new SHA384Digest(), new EdDSASigner(new HMacDSAKCalculator(new SHA384Digest())), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDSA512
+        extends EdDSASpi
+    {
+        public edDSA512()
+        {
+            super(new SHA512Digest(), new EdDSASigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDetDSA512
+        extends EdDSASpi
+    {
+        public edDetDSA512()
+        {
+            super(new SHA512Digest(), new EdDSASigner(new HMacDSAKCalculator(new SHA512Digest())), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDSARipeMD160
+        extends EdDSASpi
+    {
+        public edDSARipeMD160()
+        {
+            super(new RIPEMD160Digest(), new EdDSASigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edNR
+        extends EdDSASpi
+    {
+        public edNR()
+        {
+            super(new SHA1Digest(), new ECNRSigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edNR224
+        extends EdDSASpi
+    {
+        public edNR224()
+        {
+            super(new SHA224Digest(), new ECNRSigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edNR256
+        extends EdDSASpi
+    {
+        public edNR256()
+        {
+            super(new SHA256Digest(), new ECNRSigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edNR384
+        extends EdDSASpi
+    {
+        public edNR384()
+        {
+            super(new SHA384Digest(), new ECNRSigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edNR512
+        extends EdDSASpi
+    {
+        public edNR512()
+        {
+            super(new SHA512Digest(), new ECNRSigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edCVCDSA
+        extends EdDSASpi
+    {
+        public edCVCDSA()
+        {
+            super(new SHA1Digest(), new EdDSASigner(), new PlainDSAEncoder());
+        }
+    }
+
+    static public class edCVCDSA224
+        extends EdDSASpi
+    {
+        public edCVCDSA224()
+        {
+            super(new SHA224Digest(), new EdDSASigner(), new PlainDSAEncoder());
+        }
+    }
+
+    static public class edCVCDSA256
+        extends EdDSASpi
+    {
+        public edCVCDSA256()
+        {
+            super(new SHA256Digest(), new EdDSASigner(), new PlainDSAEncoder());
+        }
+    }
+
+    static public class edCVCDSA384
+        extends EdDSASpi
+    {
+        public edCVCDSA384()
+        {
+            super(new SHA384Digest(), new EdDSASigner(), new PlainDSAEncoder());
+        }
+    }
+
+    static public class edCVCDSA512
+        extends EdDSASpi
+    {
+        public edCVCDSA512()
+        {
+            super(new SHA512Digest(), new EdDSASigner(), new PlainDSAEncoder());
+        }
+    }
+
+    static public class edPlainDSARP160
+        extends EdDSASpi
+    {
+        public edPlainDSARP160()
+        {
+            super(new RIPEMD160Digest(), new EdDSASigner(), new PlainDSAEncoder());
+        }
+    }
+
+    private static class StdDSAEncoder
+        implements DSAEncoder
+    {
+        public byte[] encode(
+            BigInteger r,
+            BigInteger s)
+            throws IOException
+        {
+            ASN1EncodableVector v = new ASN1EncodableVector();
+
+            v.add(new ASN1Integer(r));
+            v.add(new ASN1Integer(s));
+
+            return new DERSequence(v).getEncoded(ASN1Encoding.DER);
+        }
+
+        public BigInteger[] decode(
+            byte[] encoding)
+            throws IOException
+        {
+            ASN1Sequence s = (ASN1Sequence)ASN1Primitive.fromByteArray(encoding);
+            BigInteger[] sig = new BigInteger[2];
+
+            sig[0] = ASN1Integer.getInstance(s.getObjectAt(0)).getValue();
+            sig[1] = ASN1Integer.getInstance(s.getObjectAt(1)).getValue();
+
+            return sig;
+        }
+    }
+
+    private static class PlainDSAEncoder
+        implements DSAEncoder
+    {
+        public byte[] encode(
+            BigInteger r,
+            BigInteger s)
+            throws IOException
+        {
+            byte[] first = makeUnsigned(r);
+            byte[] second = makeUnsigned(s);
+            byte[] res;
+
+            if (first.length > second.length)
+            {
+                res = new byte[first.length * 2];
+            }
+            else
+            {
+                res = new byte[second.length * 2];
+            }
+
+            System.arraycopy(first, 0, res, res.length / 2 - first.length, first.length);
+            System.arraycopy(second, 0, res, res.length - second.length, second.length);
+
+            return res;
+        }
+
+
+        private byte[] makeUnsigned(BigInteger val)
+        {
+            byte[] res = val.toByteArray();
+
+            if (res[0] == 0)
+            {
+                byte[] tmp = new byte[res.length - 1];
+
+                System.arraycopy(res, 1, tmp, 0, tmp.length);
+
+                return tmp;
+            }
+
+            return res;
+        }
+
+        public BigInteger[] decode(
+            byte[] encoding)
+            throws IOException
+        {
+            BigInteger[] sig = new BigInteger[2];
+
+            byte[] first = new byte[encoding.length / 2];
+            byte[] second = new byte[encoding.length / 2];
+
+            System.arraycopy(encoding, 0, first, 0, first.length);
+            System.arraycopy(encoding, first.length, second, 0, second.length);
+
+            sig[0] = new BigInteger(1, first);
+            sig[1] = new BigInteger(1, second);
+
+            return sig;
+        }
+    }
+}

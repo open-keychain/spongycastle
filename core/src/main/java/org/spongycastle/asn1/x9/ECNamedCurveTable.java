@@ -7,6 +7,7 @@ import org.spongycastle.asn1.ASN1ObjectIdentifier;
 import org.spongycastle.asn1.nist.NISTNamedCurves;
 import org.spongycastle.asn1.sec.SECNamedCurves;
 import org.spongycastle.asn1.teletrust.TeleTrusTNamedCurves;
+import org.spongycastle.crypto.ec.CustomNamedCurves;
 
 /**
  * A general class that reads all X9.62 style EC curve tables.
@@ -40,6 +41,11 @@ public class ECNamedCurveTable
             ecP = NISTNamedCurves.getByName(name);
         }
 
+        if (ecP == null)
+        {
+            ecP = CustomNamedCurves.getByName(name);
+        }
+
         return ecP;
     }
 
@@ -67,6 +73,11 @@ public class ECNamedCurveTable
         if (oid == null)
         {
             oid = NISTNamedCurves.getOID(name);
+        }
+
+        if (oid == null)
+        {
+            oid = CustomNamedCurves.getOID(name);
         }
 
         return oid;
@@ -112,6 +123,7 @@ public class ECNamedCurveTable
         addEnumeration(v, SECNamedCurves.getNames());
         addEnumeration(v, NISTNamedCurves.getNames());
         addEnumeration(v, TeleTrusTNamedCurves.getNames());
+        addEnumeration(v, CustomNamedCurves.getNames());
 
         return v.elements();
     }
