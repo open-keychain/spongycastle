@@ -241,6 +241,15 @@ public abstract class KeyPairGeneratorSpi
         }
     }
 
+    public static class EdDSA
+        extends EC
+    {
+        public EdDSA()
+        {
+            super("EdDSA", BouncyCastleProvider.CONFIGURATION);
+        }
+    }
+
     public static class ECDH
         extends EC
     {
