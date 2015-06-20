@@ -234,6 +234,10 @@ public class ECUtil
             {
                 oid = ECGOST3410NamedCurves.getOID(name);
             }
+            if (oid == null)
+            {
+                oid = CustomNamedCurves.getOID(name);
+            }
         }
 
         return oid;
