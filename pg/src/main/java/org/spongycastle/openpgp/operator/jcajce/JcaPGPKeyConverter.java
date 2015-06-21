@@ -188,6 +188,10 @@ public class JcaPGPKeyConverter
             ASN1ObjectIdentifier  curveOid = ASN1ObjectIdentifier.getInstance(keyInfo.getAlgorithm().getParameters());
 
             X9ECParameters params = NISTNamedCurves.getByOID(curveOid);
+            if (params == null)
+            {
+                params = CustomNamedCurves.getByOID(curveOid);
+            }
 
             ASN1OctetString key = new DEROctetString(keyInfo.getPublicKeyData().getBytes());
             X9ECPoint derQ = new X9ECPoint(params.getCurve(), key);
