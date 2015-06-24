@@ -53,7 +53,7 @@ public class EC
             provider.addAlgorithm("KeyPairGenerator.ECDHC", PREFIX + "KeyPairGeneratorSpi$ECDHC");
             provider.addAlgorithm("KeyPairGenerator.ECIES", PREFIX + "KeyPairGeneratorSpi$ECDH");
             provider.addAlgorithm("KeyPairGenerator.ECMQV", PREFIX + "KeyPairGeneratorSpi$ECMQV");
-            
+
             provider.addAlgorithm("Cipher.ECIES", PREFIX + "IESCipher$ECIES");
             provider.addAlgorithm("Cipher.ECIESwithAES", PREFIX + "IESCipher$ECIESwithAES");
             provider.addAlgorithm("Cipher.ECIESWITHAES", PREFIX + "IESCipher$ECIESwithAES");
@@ -78,9 +78,6 @@ public class EC
             provider.addAlgorithm("Alg.Alias.Signature." + TeleTrusTObjectIdentifiers.ecSignWithSha1, "ECDSA");
 
             provider.addAlgorithm("Alg.Alias.Signature.SHA1withEDDSA", "EDDSA");
-            provider.addAlgorithm("Alg.Alias.Signature.EDDSAwithSHA1", "EDDSA");
-            provider.addAlgorithm("Alg.Alias.Signature.SHA1WITHEDDSA", "EDDSA");
-            provider.addAlgorithm("Alg.Alias.Signature.EDDSAWITHSHA1", "EDDSA");
 
             provider.addAlgorithm("Signature.DETECDSA", PREFIX + "SignatureSpi$ecDetDSA");
             provider.addAlgorithm("Signature.SHA1WITHDETECDSA", PREFIX + "SignatureSpi$ecDetDSA");
