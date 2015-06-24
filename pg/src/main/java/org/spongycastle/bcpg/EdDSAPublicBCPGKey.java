@@ -9,27 +9,27 @@ import org.spongycastle.math.ec.ECPoint;
 /**
  * base class for an ECDSA Public Key.
  */
-public class EdDSAPublicBCPGKey
+public class EDDSAPublicBCPGKey
     extends ECPublicBCPGKey
 {
     /**
      * @param in the stream to read the packet from.
      */
-    protected EdDSAPublicBCPGKey(
+    protected EDDSAPublicBCPGKey(
         BCPGInputStream in)
         throws IOException
     {
         super(in);
     }
 
-    public EdDSAPublicBCPGKey(
+    public EDDSAPublicBCPGKey(
         ASN1ObjectIdentifier oid,
         ECPoint point)
     {
         super(oid, point);
     }
 
-    public EdDSAPublicBCPGKey(
+    public EDDSAPublicBCPGKey(
            ASN1ObjectIdentifier oid,
            BigInteger encodedPoint)
         throws IOException

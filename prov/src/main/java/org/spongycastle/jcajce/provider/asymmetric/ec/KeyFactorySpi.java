@@ -201,12 +201,12 @@ public class KeyFactorySpi
         }
     }
 
-    public static class EdDSA
+    public static class EDDSA
         extends KeyFactorySpi
     {
-        public EdDSA()
+        public EDDSA()
         {
-            super("EdDSA", BouncyCastleProvider.CONFIGURATION);
+            super("EDDSA", BouncyCastleProvider.CONFIGURATION);
         }
     }
 

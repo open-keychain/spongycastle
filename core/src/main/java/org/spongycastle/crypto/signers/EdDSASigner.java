@@ -23,7 +23,7 @@ import org.spongycastle.math.ec.FixedPointCombMultiplier;
 /**
  * EC-DSA as described in X9.62
  */
-public class EdDSASigner
+public class EDDSASigner
     implements ECConstants, DSA
 {
     private final DSAKCalculator kCalculator;
@@ -46,7 +46,7 @@ public class EdDSASigner
     /**
      * Default configuration, random K values.
      */
-    public EdDSASigner()
+    public EDDSASigner()
     {
         this.kCalculator = new RandomDSAKCalculator();
     }
@@ -56,7 +56,7 @@ public class EdDSASigner
      *
      * @param kCalculator a K value calculator.
      */
-    public EdDSASigner(DSAKCalculator kCalculator)
+    public EDDSASigner(DSAKCalculator kCalculator)
     {
         this.kCalculator = kCalculator;
     }
