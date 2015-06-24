@@ -278,8 +278,8 @@ public class PGPSecretKey
     {
         int algorithm = pub.getAlgorithm();
 
-        return ((algorithm == PGPPublicKey.RSA_GENERAL) || (algorithm == PGPPublicKey.RSA_SIGN)
-                    || (algorithm == PGPPublicKey.DSA) || (algorithm == PGPPublicKey.ECDSA) || (algorithm == PGPPublicKey.ELGAMAL_GENERAL));
+        return ((algorithm == PGPPublicKey.RSA_GENERAL) || (algorithm == PGPPublicKey.RSA_SIGN) || (algorithm == PGPPublicKey.DSA)
+                    || (algorithm == PGPPublicKey.ECDSA) || (algorithm == PGPPublicKey.ELGAMAL_GENERAL) || (algorithm == PGPPublicKey.EDDSA));
     }
     
     /**
@@ -515,6 +515,7 @@ public class PGPSecretKey
                 return new PGPPrivateKey(this.getKeyID(), pubPk, elPriv);
             case PGPPublicKey.ECDH:
             case PGPPublicKey.ECDSA:
+            case PGPPublicKey.EDDSA:
                 ECSecretBCPGKey ecPriv = new ECSecretBCPGKey(in);
 
                 return new PGPPrivateKey(this.getKeyID(), pubPk, ecPriv);

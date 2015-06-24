@@ -191,6 +191,9 @@ class OperatorHelper
         case PublicKeyAlgorithmTags.ECDSA:
             encAlg = "ECDSA";
             break;
+        case PublicKeyAlgorithmTags.EDDSA:
+            encAlg = "EDDSA";
+            break;
         default:
             throw new PGPException("unknown algorithm tag in signature:" + keyAlgorithm);
         }

@@ -127,8 +127,14 @@ public class JcaPGPKeyConverter
                     new java.security.spec.ECPoint(ecdsaK.getPoint().getAffineXCoord().toBigInteger(), ecdsaK.getPoint().getAffineYCoord().toBigInteger()),
                     getX9Parameters(ecdsaK.getCurveOID()));
                 fact = helper.createKeyFactory("ECDSA");
+            case PublicKeyAlgorithmTags.EDDSA:
+                ECDSAPublicBCPGKey eddsaK = (ECDSAPublicBCPGKey)publicPk.getKey();
+                ECPublicKeySpec edDsaSpec = new ECPublicKeySpec(
+                    new java.security.spec.ECPoint(eddsaK.getPoint().getAffineXCoord().toBigInteger(), eddsaK.getPoint().getAffineYCoord().toBigInteger()),
+                    getX9Parameters(eddsaK.getCurveOID()));
+                fact = helper.createKeyFactory("EDDSA");
 
-                return fact.generatePublic(ecDsaSpec);
+                return fact.generatePublic(edDsaSpec);
             default:
                 throw new PGPException("unknown public key algorithm encountered");
             }
@@ -298,6 +304,15 @@ public class JcaPGPKeyConverter
                 fact = helper.createKeyFactory("ECDSA");
 
                 return fact.generatePrivate(ecDsaSpec);
+            case PublicKeyAlgorithmTags.EDDSA:
+                ECDSAPublicBCPGKey eddsaPub = (ECDSAPublicBCPGKey)pubPk.getKey();
+                ECSecretBCPGKey eddsaK = (ECSecretBCPGKey)privPk;
+                ECPrivateKeySpec edDsaSpec = new ECPrivateKeySpec(
+                                                    eddsaK.getX(),
+                                                    getX9Parameters(eddsaPub.getCurveOID()));
+                fact = helper.createKeyFactory("EDDSA");
+
+                return fact.generatePrivate(edDsaSpec);
             case PGPPublicKey.ELGAMAL_ENCRYPT:
             case PGPPublicKey.ELGAMAL_GENERAL:
                 ElGamalPublicBCPGKey elPub = (ElGamalPublicBCPGKey)pubPk.getKey();
@@ -356,6 +371,7 @@ public class JcaPGPKeyConverter
             break;
         case PGPPublicKey.EC:
         case PGPPublicKey.ECDSA:
+        case PGPPublicKey.EDDSA:
             ECPrivateKey ecK = (ECPrivateKey)privKey;
 
             privPk = new ECSecretBCPGKey(ecK.getS());

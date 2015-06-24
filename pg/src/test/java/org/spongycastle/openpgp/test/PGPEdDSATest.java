@@ -47,24 +47,24 @@ import org.spongycastle.util.Arrays;
 import org.spongycastle.util.encoders.Base64;
 import org.spongycastle.util.test.SimpleTest;
 
-public class PGPEdDSATest
+public class PGPEDDSATest
     extends SimpleTest
 {
     public void performTest()
         throws Exception
     {
-        KeyPairGenerator        keyGen = KeyPairGenerator.getInstance("EdDSA", "SC");
+        KeyPairGenerator        keyGen = KeyPairGenerator.getInstance("EDDSA", "SC");
 
         keyGen.initialize(new ECGenParameterSpec("curve25519"));
 
         KeyPair kpSign = keyGen.generateKeyPair();
 
-        PGPKeyPair ecdsaKeyPair = new JcaPGPKeyPair(PGPPublicKey.ECDSA, kpSign, new Date());
+        PGPKeyPair ecdsaKeyPair = new JcaPGPKeyPair(PGPPublicKey.EDDSA, kpSign, new Date());
 
         //
         // try a signature
         //
-        PGPSignatureGenerator signGen = new PGPSignatureGenerator(new JcaPGPContentSignerBuilder(PGPPublicKey.ECDSA, HashAlgorithmTags.SHA256).setProvider("SC"));
+        PGPSignatureGenerator signGen = new PGPSignatureGenerator(new JcaPGPContentSignerBuilder(PGPPublicKey.EDDSA, HashAlgorithmTags.SHA256).setProvider("SC"));
 
         signGen.init(PGPSignature.BINARY_DOCUMENT, ecdsaKeyPair.getPrivateKey());
 
@@ -113,7 +113,7 @@ public class PGPEdDSATest
         //
         // try a signature using encoded key
         //
-        signGen = new PGPSignatureGenerator(new JcaPGPContentSignerBuilder(PGPPublicKey.ECDSA, HashAlgorithmTags.SHA256).setProvider("SC"));
+        signGen = new PGPSignatureGenerator(new JcaPGPContentSignerBuilder(PGPPublicKey.EDDSA, HashAlgorithmTags.SHA256).setProvider("SC"));
 
         signGen.init(PGPSignature.BINARY_DOCUMENT, secRing.getSecretKey().extractPrivateKey(new JcePBESecretKeyDecryptorBuilder().setProvider("SC").build(passPhrase)));
 

@@ -241,12 +241,12 @@ public abstract class KeyPairGeneratorSpi
         }
     }
 
-    public static class EdDSA
+    public static class EDDSA
         extends EC
     {
-        public EdDSA()
+        public EDDSA()
         {
-            super("EdDSA", BouncyCastleProvider.CONFIGURATION);
+            super("EDDSA", BouncyCastleProvider.CONFIGURATION);
         }
     }
 
