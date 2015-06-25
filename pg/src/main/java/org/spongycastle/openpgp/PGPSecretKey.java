@@ -946,7 +946,15 @@ public class PGPSecretKey
                    throw new PGPException("no q value found");
                }
 
-               PublicKeyPacket pubPacket = new PublicKeyPacket(PublicKeyAlgorithmTags.ECDSA, new Date(), new ECDSAPublicBCPGKey(ECNamedCurveTable.getOID(curveName), new BigInteger(1, qVal)));
+               PublicKeyPacket pubPacket;
+               if (curveName.startsWith("Ed25519"))
+               {
+                    pubPacket = new PublicKeyPacket(PublicKeyAlgorithmTags.EDDSA, new Date(), new ECDSAPublicBCPGKey(ECNamedCurveTable.getOID(curveName), new BigInteger(1, qVal)));
+               }
+               else
+               {
+                    pubPacket = new PublicKeyPacket(PublicKeyAlgorithmTags.ECDSA, new Date(), new ECDSAPublicBCPGKey(ECNamedCurveTable.getOID(curveName), new BigInteger(1, qVal)));
+               }
 
                SXprUtils.skipCloseParenthesis(inputStream);
 

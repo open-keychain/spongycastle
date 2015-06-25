@@ -287,7 +287,7 @@ public class SignatureSpi
     {
         public edDSA()
         {
-            super(new SHA1Digest(), new ECDSASigner(), new PlainDSAEncoder());
+            super(new SHA1Digest(), new ECDSASigner(), new StdDSAEncoder());
         }
     }
 

@@ -81,7 +81,7 @@ class BcImplProvider
         case PublicKeyAlgorithmTags.ECDSA:
             return new DSADigestSigner(new ECDSASigner(), createDigest(hashAlgorithm));
         case PublicKeyAlgorithmTags.EDDSA:
-            return new DSADigestSigner(new ECDSASigner(), createDigest(hashAlgorithm));
+            return new DSADigestSigner(new EDDSASigner(), createDigest(hashAlgorithm));
         default:
             throw new PGPException("cannot recognise keyAlgorithm: " + keyAlgorithm);
         }
