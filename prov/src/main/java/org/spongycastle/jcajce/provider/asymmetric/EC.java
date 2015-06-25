@@ -40,14 +40,14 @@ public class EC
 
             provider.addAlgorithm("KeyFactory.EC", PREFIX + "KeyFactorySpi$EC");
             provider.addAlgorithm("KeyFactory.ECDSA", PREFIX + "KeyFactorySpi$ECDSA");
-            provider.addAlgorithm("KeyFactory.EDDSA", PREFIX + "KeyFactorySpi$ECDSA");
+            provider.addAlgorithm("KeyFactory.EDDSA", PREFIX + "KeyFactorySpi$EDDSA");
             provider.addAlgorithm("KeyFactory.ECDH", PREFIX + "KeyFactorySpi$ECDH");
             provider.addAlgorithm("KeyFactory.ECDHC", PREFIX + "KeyFactorySpi$ECDHC");
             provider.addAlgorithm("KeyFactory.ECMQV", PREFIX + "KeyFactorySpi$ECMQV");
 
             provider.addAlgorithm("KeyPairGenerator.EC", PREFIX + "KeyPairGeneratorSpi$EC");
             provider.addAlgorithm("KeyPairGenerator.ECDSA", PREFIX + "KeyPairGeneratorSpi$ECDSA");
-            provider.addAlgorithm("KeyPairGenerator.EDDSA", PREFIX + "KeyPairGeneratorSpi$ECDSA");
+            provider.addAlgorithm("KeyPairGenerator.EDDSA", PREFIX + "KeyPairGeneratorSpi$EDDSA");
             provider.addAlgorithm("KeyPairGenerator.ECDH", PREFIX + "KeyPairGeneratorSpi$ECDH");
             provider.addAlgorithm("KeyPairGenerator.ECDHWITHSHA1KDF", PREFIX + "KeyPairGeneratorSpi$ECDH");
             provider.addAlgorithm("KeyPairGenerator.ECDHC", PREFIX + "KeyPairGeneratorSpi$ECDHC");
@@ -65,7 +65,7 @@ public class EC
             provider.addAlgorithm("Cipher.ECIESWITHDESEDE-CBC", PREFIX + "IESCipher$ECIESwithDESedeCBC");
 
             provider.addAlgorithm("Signature.ECDSA", PREFIX + "SignatureSpi$ecDSA");
-            provider.addAlgorithm("Signature.EDDSA", PREFIX + "SignatureSpi$ecDSA");
+            provider.addAlgorithm("Signature.EDDSA", PREFIX + "SignatureSpi$edDSA");
             provider.addAlgorithm("Signature.NONEwithECDSA", PREFIX + "SignatureSpi$ecDSAnone");
 
             provider.addAlgorithm("Alg.Alias.Signature.SHA1withECDSA", "ECDSA");
@@ -78,6 +78,7 @@ public class EC
             provider.addAlgorithm("Alg.Alias.Signature." + TeleTrusTObjectIdentifiers.ecSignWithSha1, "ECDSA");
 
             provider.addAlgorithm("Alg.Alias.Signature.SHA1withEDDSA", "EDDSA");
+            provider.addAlgorithm("Alg.Alias.Signature.SHA1WITHEDDSA", "EDDSA");
 
             provider.addAlgorithm("Signature.DETECDSA", PREFIX + "SignatureSpi$ecDetDSA");
             provider.addAlgorithm("Signature.SHA1WITHDETECDSA", PREFIX + "SignatureSpi$ecDetDSA");
@@ -111,7 +112,7 @@ public class EC
             addSignatureAlgorithm(provider, "SHA512", "PLAIN-ECDSA", PREFIX + "SignatureSpi$ecCVCDSA512", BSIObjectIdentifiers.ecdsa_plain_SHA512);
             addSignatureAlgorithm(provider, "RIPEMD160", "PLAIN-ECDSA", PREFIX + "SignatureSpi$ecPlainDSARP160", BSIObjectIdentifiers.ecdsa_plain_RIPEMD160);
 
-            addSignatureAlgorithm(provider, "SHA256", "EDDSA", PREFIX + "SignatureSpi$ecDSA256", X9ObjectIdentifiers.eddsa_with_SHA256);
+            addSignatureAlgorithm(provider, "SHA256", "EDDSA", PREFIX + "SignatureSpi$edDSA256", X9ObjectIdentifiers.eddsa_with_SHA256);
         }
     }
 }

@@ -33,6 +33,7 @@ import org.spongycastle.bcpg.DSAPublicBCPGKey;
 import org.spongycastle.bcpg.DSASecretBCPGKey;
 import org.spongycastle.bcpg.ECDHPublicBCPGKey;
 import org.spongycastle.bcpg.ECDSAPublicBCPGKey;
+import org.spongycastle.bcpg.EDDSAPublicBCPGKey;
 import org.spongycastle.bcpg.ECSecretBCPGKey;
 import org.spongycastle.bcpg.ElGamalPublicBCPGKey;
 import org.spongycastle.bcpg.ElGamalSecretBCPGKey;
@@ -127,8 +128,10 @@ public class JcaPGPKeyConverter
                     new java.security.spec.ECPoint(ecdsaK.getPoint().getAffineXCoord().toBigInteger(), ecdsaK.getPoint().getAffineYCoord().toBigInteger()),
                     getX9Parameters(ecdsaK.getCurveOID()));
                 fact = helper.createKeyFactory("ECDSA");
+
+                return fact.generatePublic(ecDsaSpec);
             case PublicKeyAlgorithmTags.EDDSA:
-                ECDSAPublicBCPGKey eddsaK = (ECDSAPublicBCPGKey)publicPk.getKey();
+                EDDSAPublicBCPGKey eddsaK = (EDDSAPublicBCPGKey)publicPk.getKey();
                 ECPublicKeySpec edDsaSpec = new ECPublicKeySpec(
                     new java.security.spec.ECPoint(eddsaK.getPoint().getAffineXCoord().toBigInteger(), eddsaK.getPoint().getAffineYCoord().toBigInteger()),
                     getX9Parameters(eddsaK.getCurveOID()));
@@ -214,7 +217,14 @@ public class JcaPGPKeyConverter
             }
             else
             {
-                bcpgKey = new ECDSAPublicBCPGKey(curveOid, derQ.getPoint());
+                if (algorithm == PGPPublicKey.EDDSA)
+                {
+                    bcpgKey = new EDDSAPublicBCPGKey(curveOid, derQ.getPoint());
+                }
+                else
+                {
+                    bcpgKey = new ECDSAPublicBCPGKey(curveOid, derQ.getPoint());
+                }
             }
         }
         else
@@ -305,7 +315,7 @@ public class JcaPGPKeyConverter
 
                 return fact.generatePrivate(ecDsaSpec);
             case PublicKeyAlgorithmTags.EDDSA:
-                ECDSAPublicBCPGKey eddsaPub = (ECDSAPublicBCPGKey)pubPk.getKey();
+                EDDSAPublicBCPGKey eddsaPub = (EDDSAPublicBCPGKey)pubPk.getKey();
                 ECSecretBCPGKey eddsaK = (ECSecretBCPGKey)privPk;
                 ECPrivateKeySpec edDsaSpec = new ECPrivateKeySpec(
                                                     eddsaK.getX(),
