@@ -133,7 +133,7 @@ public class PGPEDDSATest
 
     public String getName()
     {
-        return "PGPEdDSATest";
+        return "PGPEDDSATest";
     }
 
     public static void main(

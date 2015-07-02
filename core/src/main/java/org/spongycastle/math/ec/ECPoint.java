@@ -66,6 +66,10 @@ public abstract class ECPoint
 
     protected boolean satisfiesCofactor()
     {
+        if (this.getCurveCoordinateSystem() == ECCurve.COORD_JACOBIAN_MODIFIED)
+        {
+            return true;
+        }
         BigInteger h = curve.getCofactor();
         return h == null || h.equals(ECConstants.ONE) || !ECAlgorithms.referenceMultiply(this, h).isInfinity();
     }
@@ -556,7 +560,6 @@ public abstract class ECPoint
             }
             case ECCurve.COORD_JACOBIAN:
             case ECCurve.COORD_JACOBIAN_CHUDNOVSKY:
-            case ECCurve.COORD_JACOBIAN_MODIFIED:
             {
                 ECFieldElement Z = this.zs[0];
                 if (!Z.isOne())
@@ -567,6 +570,8 @@ public abstract class ECPoint
                 }
                 break;
             }
+            case ECCurve.COORD_JACOBIAN_MODIFIED:
+                return true;
             default:
                 throw new IllegalStateException("unsupported coordinate system");
             }

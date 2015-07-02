@@ -13,7 +13,9 @@ import org.spongycastle.asn1.ASN1ObjectIdentifier;
 import org.spongycastle.asn1.x9.ECNamedCurveTable;
 import org.spongycastle.asn1.x9.X9ECParameters;
 import org.spongycastle.crypto.AsymmetricCipherKeyPair;
+import org.spongycastle.crypto.AsymmetricCipherKeyPairGenerator;
 import org.spongycastle.crypto.generators.ECKeyPairGenerator;
+import org.spongycastle.crypto.generators.EDDSAKeyPairGenerator;
 import org.spongycastle.crypto.params.ECDomainParameters;
 import org.spongycastle.crypto.params.ECKeyGenerationParameters;
 import org.spongycastle.crypto.params.ECPrivateKeyParameters;
@@ -39,15 +41,15 @@ public abstract class KeyPairGeneratorSpi
     public static class EC
         extends KeyPairGeneratorSpi
     {
-        ECKeyGenerationParameters   param;
-        ECKeyPairGenerator          engine = new ECKeyPairGenerator();
-        Object                      ecParams = null;
-        int                         strength = 239;
-        int                         certainty = 50;
-        SecureRandom                random = new SecureRandom();
-        boolean                     initialised = false;
-        String                      algorithm;
-        ProviderConfiguration       configuration;
+        ECKeyGenerationParameters           param;
+        AsymmetricCipherKeyPairGenerator    engine = new ECKeyPairGenerator();
+        Object                              ecParams = null;
+        int                                 strength = 239;
+        int                                 certainty = 50;
+        SecureRandom                        random = new SecureRandom();
+        boolean                             initialised = false;
+        String                              algorithm;
+        ProviderConfiguration               configuration;
 
         static private Hashtable    ecParameters;
 
@@ -77,6 +79,10 @@ public abstract class KeyPairGeneratorSpi
             super(algorithm);
             this.algorithm = algorithm;
             this.configuration = configuration;
+            if (algorithm == "EDDSA")
+            {
+                this.engine = new EDDSAKeyPairGenerator();
+            }
         }
 
         public void initialize(
