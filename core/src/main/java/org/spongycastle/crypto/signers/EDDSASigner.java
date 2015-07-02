@@ -89,7 +89,7 @@ public class EDDSASigner
         this.random = initSecureRandom(forSigning && !kCalculator.isDeterministic(), providedRandom);
     }
 
-    static byte[] H(byte[] m) {
+    public static byte[] H(byte[] m) {
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA-512");
@@ -137,7 +137,7 @@ public class EDDSASigner
         return new BigInteger[]{x3.mod(q), y3.mod(q)};
     }
 
-    static BigInteger[] scalarmult(BigInteger[] P, BigInteger e) {
+    public static BigInteger[] scalarmult(BigInteger[] P, BigInteger e) {
         if (e.equals(BigInteger.ZERO)) {
             return new BigInteger[]{BigInteger.ZERO, BigInteger.ONE};
         }
@@ -145,23 +145,6 @@ public class EDDSASigner
         Q = edwards(Q, Q);
         if (e.testBit(0)) Q = edwards(Q, P);
         return Q;
-    }
-
-    public static byte[] encodeint(BigInteger y) {
-        byte[] in = y.toByteArray();
-        byte[] out = new byte[in.length];
-        for (int i=0;i<in.length;i++) {
-            out[i] = in[in.length-1-i];
-        }
-        return out;
-    }
-
-    public static byte[] encodepoint(BigInteger[] P) {
-        BigInteger x = P[0];
-        BigInteger y = P[1];
-        byte[] out = encodeint(y);
-        out[out.length-1] |= (x.testBit(0) ? 0x80 : 0);
-        return out;
     }
 
     public static int bit(byte[] h, int i) {
@@ -176,7 +159,7 @@ public class EDDSASigner
             a = a.add(apart);
         }
         BigInteger[] A = scalarmult(B,a);
-        return encodepoint(A);
+        return A[1].toByteArray();
     }
 
     public static BigInteger Hint(byte[] m) {
@@ -197,37 +180,26 @@ public class EDDSASigner
         return xx.negate().add(yy).subtract(BigInteger.ONE).subtract(dxxyy).mod(q).equals(BigInteger.ZERO);
     }
 
-    static BigInteger decodeint(byte[] s) {
-        byte[] out = new byte[s.length];
-        for (int i=0;i<s.length;i++) {
-            out[i] = s[s.length-1-i];
-        }
-        return new BigInteger(out).and(un);
+    public static byte[] encodepoint(BigInteger[] P) {
+        BigInteger x = P[0];
+        BigInteger y = P[1];
+        ByteBuffer out = ByteBuffer.allocate(b/4);
+        out.put(x.toByteArray()).put(y.toByteArray());
+        return out.array();
     }
 
     static BigInteger[] decodepoint(byte[] s) throws Exception {
-        byte[] ybyte = new byte[s.length];
-        for (int i=0;i<s.length;i++) {
-            ybyte[i] = s[s.length-1-i];
-        }
-        BigInteger y = new BigInteger(ybyte).and(un);
-        BigInteger x = xrecover(y);
-        if ((x.testBit(0)?1:0) != bit(s, b-1)) {
-            x = q.subtract(x);
-        }
+        ByteBuffer xb = ByteBuffer.allocate(b/8);
+        ByteBuffer yb = ByteBuffer.allocate(b/8);
+        xb.put(s, 0, b/8);
+        yb.put(s, b/8, b/8);
+        BigInteger x = new BigInteger(xb.array());
+        BigInteger y = new BigInteger(yb.array());
         BigInteger[] P = {x,y};
         if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
         return P;
     }
 
-    // 5.3 pg 28
-    /**
-     * generate a signature for the given message using the key we were
-     * initialised with. For conventional DSA the message should be a SHA-1
-     * hash of the message of interest.
-     *
-     * @param message the message that will be verified later.
-     */
     public BigInteger[] generateSignature(byte[] m) {
         BigInteger d = ((ECPrivateKeyParameters)key).getD();
         byte[] sk = d.toByteArray();
@@ -246,57 +218,31 @@ public class EDDSASigner
         rsub.put(h, b/8, b/4-b/8).put(m);
         BigInteger r = Hint(rsub.array());
         BigInteger[] R = scalarmult(B,r);
-        ByteBuffer Stemp = ByteBuffer.allocate(32+pk.length+m.length);
+        ByteBuffer Stemp = ByteBuffer.allocate(b/4+pk.length+m.length);
         Stemp.put(encodepoint(R)).put(pk).put(m);
         BigInteger S = r.add(Hint(Stemp.array()).multiply(a)).mod(l);
-        return new BigInteger[]{ new BigInteger(encodepoint(R)), S };
+        return new BigInteger[]{ new BigInteger(encodepoint(R)), S};
     }
 
-    // 5.4 pg 29
-    /**
-     * return true if the value r and s represent a DSA signature for
-     * the passed in message (for standard DSA the message should be
-     * a SHA-1 hash of the real message to be verified).
-     */
     public boolean verifySignature(
         byte[]      m,
-        BigInteger  r,
-        BigInteger  bS)
+        BigInteger  Rb,
+        BigInteger  S)
     {
-        BigInteger d = ((ECPrivateKeyParameters)key).getD();
-        byte[] sk = d.toByteArray();
-        if (sk[0] == 0) {
-            byte[] tmp = new byte[sk.length - 1];
-            System.arraycopy(sk, 1, tmp, 0, tmp.length);
-            sk = tmp;
-        }
-        byte[] pk = publickey(sk);
-
-        byte[] s = bS.toByteArray();
-        if (s[0] == 0) {
-            byte[] tmp = new byte[s.length - 1];
-            System.arraycopy(s, 1, tmp, 0, tmp.length);
-            s = tmp;
-        }
-        if (s.length != b/4 || pk.length != b/8)
-        {
-            return false;
-        }
-        byte[] Rbyte = Arrays.copyOfRange(s, 0, b/8);
+        ECPoint Q = ((ECPublicKeyParameters)key).getQ();
+        byte[] pk = Q.getY().toBigInteger().toByteArray();
         BigInteger[] R,A;
         try
         {
-            R = decodepoint(Rbyte);
-            A = decodepoint(pk);
+            R = decodepoint(Rb.toByteArray());
         }
         catch (Exception e)
         {
             e.printStackTrace();
             return false;
         }
-        byte[] Sbyte = Arrays.copyOfRange(s, b/8, b/4);
-        BigInteger S = decodeint(Sbyte);
-        ByteBuffer Stemp = ByteBuffer.allocate(32+pk.length+m.length);
+        A = new BigInteger[]{Q.getX().toBigInteger(), Q.getY().toBigInteger()};
+        ByteBuffer Stemp = ByteBuffer.allocate(b/4+pk.length+m.length);
         Stemp.put(encodepoint(R)).put(pk).put(m);
         BigInteger h = Hint(Stemp.array());
         BigInteger[] ra = scalarmult(B,S);
@@ -304,11 +250,6 @@ public class EDDSASigner
         if (!ra[0].equals(rb[0]) || !ra[1].equals(rb[1])) // Constant time comparison
             return false;
         return true;
-    }
-
-    protected ECMultiplier createBasePointMultiplier()
-    {
-        return new FixedPointCombMultiplier();
     }
 
     protected SecureRandom initSecureRandom(boolean needed, SecureRandom provided)
