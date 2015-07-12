@@ -45,6 +45,9 @@ public class MPInteger
     {
         int length = value.bitLength();
         
+        if (value.compareTo(BigInteger.valueOf(0)) == -1)
+            length++;
+
         out.write(length >> 8);
         out.write(length);
         

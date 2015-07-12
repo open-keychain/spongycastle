@@ -180,21 +180,32 @@ public class EDDSASigner
         return xx.negate().add(yy).subtract(BigInteger.ONE).subtract(dxxyy).mod(q).equals(BigInteger.ZERO);
     }
 
+    static byte[] encodeint(BigInteger y) {
+        byte[] in = y.toByteArray();
+        byte[] out = new byte[in.length];
+        for (int i=0;i<in.length;i++) {
+            out[i] = in[i];
+        }
+        return out;
+    }
+
     public static byte[] encodepoint(BigInteger[] P) {
         BigInteger x = P[0];
         BigInteger y = P[1];
-        ByteBuffer out = ByteBuffer.allocate(b/4);
-        out.put(x.toByteArray()).put(y.toByteArray());
-        return out.array();
+        byte[] out = encodeint(y);
+        out[0] |= (x.testBit(0) ? 0x80 : 0);
+        return out;
     }
 
     static BigInteger[] decodepoint(byte[] s) throws Exception {
-        ByteBuffer xb = ByteBuffer.allocate(b/8);
-        ByteBuffer yb = ByteBuffer.allocate(b/8);
-        xb.put(s, 0, b/8);
-        yb.put(s, b/8, b/8);
-        BigInteger x = new BigInteger(xb.array());
-        BigInteger y = new BigInteger(yb.array());
+        byte[] ybyte = Arrays.copyOf(s, s.length);
+        ybyte[0] &= 0x7F;
+        BigInteger y = new BigInteger(ybyte);
+        BigInteger x = xrecover(y);
+        if ((x.testBit(0)?1:0) != (s[0]&0x80) )
+        {
+            x = q.subtract(x);
+        }
         BigInteger[] P = {x,y};
         if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
         return P;
