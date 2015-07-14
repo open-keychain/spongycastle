@@ -55,7 +55,7 @@ public class PGPEDDSATest
     {
         KeyPairGenerator        keyGen = KeyPairGenerator.getInstance("EDDSA", "SC");
 
-        keyGen.initialize(new ECGenParameterSpec("curve25519"));
+        keyGen.initialize(new ECGenParameterSpec("ed25519"));
 
         KeyPair kpSign = keyGen.generateKeyPair();
 
