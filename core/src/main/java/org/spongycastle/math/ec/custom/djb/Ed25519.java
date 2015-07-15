@@ -10,17 +10,17 @@ import org.spongycastle.util.encoders.Hex;
 
 public class Ed25519 extends ECCurve.AbstractFp
 {
-    public static final BigInteger q = Nat256.toBigInteger(Curve25519Field.P);
+    public static final BigInteger q = Nat256.toBigInteger(Ed25519Field.P);
 
     private static final int Ed25519_DEFAULT_COORDS = COORD_JACOBIAN_MODIFIED;
 
-    protected Curve25519Point infinity;
+    protected Ed25519Point infinity;
 
     public Ed25519()
     {
         super(q);
 
-        this.infinity = new Curve25519Point(this, null, null);
+        this.infinity = new Ed25519Point(this, null, null);
 
         this.a = fromBigInteger(new BigInteger(1,
             Hex.decode("2AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA984914A144")));
@@ -60,17 +60,17 @@ public class Ed25519 extends ECCurve.AbstractFp
 
     public ECFieldElement fromBigInteger(BigInteger x)
     {
-        return new Curve25519FieldElement(x);
+        return new Ed25519FieldElement(x);
     }
 
     protected ECPoint createRawPoint(ECFieldElement x, ECFieldElement y, boolean withCompression)
     {
-        return new Curve25519Point(this, x, y, withCompression);
+        return new Ed25519Point(this, x, y, withCompression);
     }
 
     protected ECPoint createRawPoint(ECFieldElement x, ECFieldElement y, ECFieldElement[] zs, boolean withCompression)
     {
-        return new Curve25519Point(this, x, y, zs, withCompression);
+        return new Ed25519Point(this, x, y, zs, withCompression);
     }
 
     public ECPoint getInfinity()
