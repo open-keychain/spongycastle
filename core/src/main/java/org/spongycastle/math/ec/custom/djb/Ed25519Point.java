@@ -63,10 +63,6 @@ public class Ed25519Point extends ECPoint.AbstractFp
         {
             return this;
         }
-        if (this == b)
-        {
-            return twice();
-        }
 
         ECCurve curve = this.getCurve();
 
@@ -97,8 +93,8 @@ public class Ed25519Point extends ECPoint.AbstractFp
         Ed25519Field.multiply(X1.x, X2.x, t2);
         Ed25519Field.subtract(one, dtemp, t3);
         Mod.invert(Ed25519Field.P, t3, t3);
-        Ed25519Field.add(t1, t2, x3);
-        Ed25519Field.multiply(x3, t3, x3);
+        Ed25519Field.add(t1, t2, y3);
+        Ed25519Field.multiply(y3, t3, y3);
 
         Ed25519FieldElement X3 = new Ed25519FieldElement(x3);
         Ed25519FieldElement Y3 = new Ed25519FieldElement(y3);
