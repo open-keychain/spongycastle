@@ -12,6 +12,9 @@ public class Ed25519Field
     // 2^255 - 2^4 - 2^1 - 1
     static final int[] P = new int[]{ 0xFFFFFFED, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
         0xFFFFFFFF, 0x7FFFFFFF };
+    // -121665 / 121666 mod P
+    static final int[] d = Nat256.fromBigInteger(new
+        BigInteger("37095705934669439343138083508754565189542113879843219016388785533085940283555"));
     private static final int P7 = 0x7FFFFFFF;
     private static final int[] PExt = new int[]{ 0x00000169, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
         0x00000000, 0x00000000, 0x00000000, 0xFFFFFFED, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,

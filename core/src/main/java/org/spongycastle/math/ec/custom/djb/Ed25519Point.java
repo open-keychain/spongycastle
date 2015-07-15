@@ -1,8 +1,11 @@
 package org.spongycastle.math.ec.custom.djb;
 
+import java.math.BigInteger;
+
 import org.spongycastle.math.ec.ECCurve;
 import org.spongycastle.math.ec.ECFieldElement;
 import org.spongycastle.math.ec.ECPoint;
+import org.spongycastle.math.raw.Mod;
 import org.spongycastle.math.raw.Nat256;
 
 public class Ed25519Point extends ECPoint.AbstractFp
@@ -21,31 +24,16 @@ public class Ed25519Point extends ECPoint.AbstractFp
         this(curve, x, y, false);
     }
 
-    /**
-     * Create a point that encodes with or without point compresion.
-     *
-     * @param curve the curve to use
-     * @param x affine x co-ordinate
-     * @param y affine y co-ordinate
-     * @param withCompression if true encode with point compression
-     *
-     * @deprecated per-point compression property will be removed, refer {@link #getEncoded(boolean)}
-     */
-    public Ed25519Point(ECCurve curve, ECFieldElement x, ECFieldElement y, boolean withCompression)
+    Ed25519Point(ECCurve curve, ECFieldElement x, ECFieldElement y, ECFieldElement[] zs, boolean withCompression)
     {
-        super(curve, x, y);
-
-        if ((x == null) != (y == null))
-        {
-            throw new IllegalArgumentException("Exactly one of the field elements is null");
-        }
+        super(curve, x, y, zs);
 
         this.withCompression = withCompression;
     }
 
-    Ed25519Point(ECCurve curve, ECFieldElement x, ECFieldElement y, ECFieldElement[] zs, boolean withCompression)
+    Ed25519Point(ECCurve curve, ECFieldElement x, ECFieldElement y, boolean withCompression)
     {
-        super(curve, x, y, zs);
+        super(curve, x, y);
 
         this.withCompression = withCompression;
     }
@@ -82,116 +70,40 @@ public class Ed25519Point extends ECPoint.AbstractFp
 
         ECCurve curve = this.getCurve();
 
-        Ed25519FieldElement X1 = (Ed25519FieldElement)this.x, Y1 = (Ed25519FieldElement)this.y,
-            Z1 = (Ed25519FieldElement)this.zs[0];
-        Ed25519FieldElement X2 = (Ed25519FieldElement)b.getXCoord(), Y2 = (Ed25519FieldElement)b.getYCoord(),
-            Z2 = (Ed25519FieldElement)b.getZCoord(0);
+        Ed25519FieldElement X1 = (Ed25519FieldElement)this.x, Y1 = (Ed25519FieldElement)this.y;
+        Ed25519FieldElement X2 = (Ed25519FieldElement)b.getXCoord(), Y2 = (Ed25519FieldElement)b.getYCoord();
 
-        int c;
-        int[] tt1 = Nat256.createExt();
+        int[] t1 = Nat256.create();
         int[] t2 = Nat256.create();
         int[] t3 = Nat256.create();
-        int[] t4 = Nat256.create();
+        int[] one = Nat256.fromBigInteger(BigInteger.ONE);
 
-        boolean Z1IsOne = Z1.isOne();
-        int[] U2, S2;
-        if (Z1IsOne)
-        {
-            U2 = X2.x;
-            S2 = Y2.x;
-        }
-        else
-        {
-            S2 = t3;
-            Ed25519Field.square(Z1.x, S2);
+        int[] dtemp = Ed25519Field.d;
+        Ed25519Field.multiply(dtemp, X1.x, dtemp);
+        Ed25519Field.multiply(dtemp, X2.x, dtemp);
+        Ed25519Field.multiply(dtemp, Y1.x, dtemp);
+        Ed25519Field.multiply(dtemp, Y2.x, dtemp);
 
-            U2 = t2;
-            Ed25519Field.multiply(S2, X2.x, U2);
+        int[] x3 = Nat256.create();
+        Ed25519Field.multiply(X1.x, Y2.x, t1);
+        Ed25519Field.multiply(X2.x, Y1.x, t2);
+        Ed25519Field.add(one, dtemp, t3);
+        Mod.invert(Ed25519Field.P, t3, t3);
+        Ed25519Field.add(t1, t2, x3);
+        Ed25519Field.multiply(x3, t3, x3);
 
-            Ed25519Field.multiply(S2, Z1.x, S2);
-            Ed25519Field.multiply(S2, Y2.x, S2);
-        }
+        int[] y3 = Nat256.create();
+        Ed25519Field.multiply(Y1.x, Y2.x, t1);
+        Ed25519Field.multiply(X1.x, X2.x, t2);
+        Ed25519Field.subtract(one, dtemp, t3);
+        Mod.invert(Ed25519Field.P, t3, t3);
+        Ed25519Field.add(t1, t2, x3);
+        Ed25519Field.multiply(x3, t3, x3);
 
-        boolean Z2IsOne = Z2.isOne();
-        int[] U1, S1;
-        if (Z2IsOne)
-        {
-            U1 = X1.x;
-            S1 = Y1.x;
-        }
-        else
-        {
-            S1 = t4;
-            Ed25519Field.square(Z2.x, S1);
+        Ed25519FieldElement X3 = new Ed25519FieldElement(x3);
+        Ed25519FieldElement Y3 = new Ed25519FieldElement(y3);
 
-            U1 = tt1;
-            Ed25519Field.multiply(S1, X1.x, U1);
-
-            Ed25519Field.multiply(S1, Z2.x, S1);
-            Ed25519Field.multiply(S1, Y1.x, S1);
-        }
-
-        int[] H = Nat256.create();
-        Ed25519Field.subtract(U1, U2, H);
-
-        int[] R = t2;
-        Ed25519Field.subtract(S1, S2, R);
-
-        // Check if b == this or b == -this
-        if (Nat256.isZero(H))
-        {
-            if (Nat256.isZero(R))
-            {
-                // this == b, i.e. this must be doubled
-                return this.twice();
-            }
-
-            // this == -b, i.e. the result is the point at infinity
-            return curve.getInfinity();
-        }
-
-        int[] HSquared = Nat256.create();
-        Ed25519Field.square(H, HSquared);
-
-        int[] G = Nat256.create();
-        Ed25519Field.multiply(HSquared, H, G);
-
-        int[] V = t3;
-        Ed25519Field.multiply(HSquared, U1, V);
-
-        Ed25519Field.negate(G, G);
-        Nat256.mul(S1, G, tt1);
-
-        c = Nat256.addBothTo(V, V, G);
-        Ed25519Field.reduce27(c, G);
-
-        Ed25519FieldElement X3 = new Ed25519FieldElement(t4);
-        Ed25519Field.square(R, X3.x);
-        Ed25519Field.subtract(X3.x, G, X3.x);
-
-        Ed25519FieldElement Y3 = new Ed25519FieldElement(G);
-        Ed25519Field.subtract(V, X3.x, Y3.x);
-        Ed25519Field.multiplyAddToExt(Y3.x, R, tt1);
-        Ed25519Field.reduce(tt1, Y3.x);
-
-        Ed25519FieldElement Z3 = new Ed25519FieldElement(H);
-        if (!Z1IsOne)
-        {
-            Ed25519Field.multiply(Z3.x, Z1.x, Z3.x);
-        }
-        if (!Z2IsOne)
-        {
-            Ed25519Field.multiply(Z3.x, Z2.x, Z3.x);
-        }
-
-        int[] Z3Squared = (Z1IsOne && Z2IsOne) ? HSquared : null;
-
-        // TODO If the result will only be used in a subsequent addition, we don't need W3
-        Ed25519FieldElement W3 = calculateJacobianModifiedW((Ed25519FieldElement)Z3, Z3Squared);
-
-        ECFieldElement[] zs = new ECFieldElement[]{ Z3, W3 };
-
-        return new Ed25519Point(curve, X3, Y3, zs, this.withCompression);
+        return new Ed25519Point(curve, X3, Y3, this.withCompression);
     }
 
     public ECPoint twice()
@@ -209,7 +121,7 @@ public class Ed25519Point extends ECPoint.AbstractFp
             return curve.getInfinity();
         }
 
-        return twiceJacobianModified(true);
+        return this.add(this);
     }
 
     public ECPoint twicePlus(ECPoint b)
