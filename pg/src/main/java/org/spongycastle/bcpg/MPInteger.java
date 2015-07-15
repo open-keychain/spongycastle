@@ -44,8 +44,8 @@ public class MPInteger
         throws IOException
     {
         int length = value.bitLength();
-        
-        if (value.compareTo(BigInteger.valueOf(0)) == -1)
+
+        if (value.signum() == -1)
             length++;
 
         out.write(length >> 8);
