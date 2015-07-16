@@ -7,7 +7,7 @@ import org.spongycastle.asn1.ASN1ObjectIdentifier;
 import org.spongycastle.math.ec.ECPoint;
 
 /**
- * base class for an ECDSA Public Key.
+ * base class for an EDDSA Public Key.
  */
 public class EDDSAPublicBCPGKey
     extends ECPublicBCPGKey

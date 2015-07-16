@@ -20,9 +20,6 @@ import org.spongycastle.math.ec.ECMultiplier;
 import org.spongycastle.math.ec.ECPoint;
 import org.spongycastle.math.ec.FixedPointCombMultiplier;
 
-/**
- * EC-DSA as described in X9.62
- */
 public class EDDSASigner
     implements ECConstants, DSA
 {

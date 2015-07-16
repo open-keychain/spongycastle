@@ -74,15 +74,6 @@ public class CustomNamedCurves
             byte[] S = null;
             ECCurve curve = configureCurve(new Ed25519());
 
-            /*
-             * NOTE: Curve25519 was specified in Montgomery form. Rewriting in Weierstrass form
-             * involves substitution of variables, so the base-point x coordinate is 9 + (486662 / 3).
-             *
-             * The Curve25519 paper doesn't say which of the two possible y values the base
-             * point has. The choice here is guided by language in the Ed25519 paper.
-             *
-             * (The other possible y value is 5F51E65E475F794B1FE122D388B72EB36DC2B28192839E4DD6163A5D81312C14)
-             */
             ECPoint G = curve.decodePoint(Hex.decode("04"
                 + "2AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD245A"
                 + "20AE19A1B8A086B4E01EDD2C7748D14C923D4D7E6D7C61B229E9C5A27ECED3D9"));
