@@ -51,10 +51,6 @@ public class EDDSAKeyPairGenerator
         }
     }
 
-    /**
-     * Given the domain parameters this routine generates an EC key
-     * pair in accordance with X9.62 section 5.2.1 pages 26, 27.
-     */
     public AsymmetricCipherKeyPair generateKeyPair()
     {
         BigInteger n = params.getN();
