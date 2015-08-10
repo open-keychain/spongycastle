@@ -49,6 +49,10 @@ public class JcaPublicKeyConverter
         {
             return getECPublicKeyPublicKey((ECDSAPublicKey)publicKeyDataObject);
         }
+        else if (publicKeyDataObject.getUsage().on(EACObjectIdentifiers.id_TA_EDDSA))
+        {
+            return getECPublicKeyPublicKey((ECDSAPublicKey)publicKeyDataObject);
+        }
         else
         {
             RSAPublicKey pubKey = (RSAPublicKey)publicKeyDataObject;
@@ -81,17 +85,35 @@ public class JcaPublicKeyConverter
         ECPublicKeySpec pubKeySpec = new ECPublicKeySpec(point, spec);
 
         KeyFactory factk;
-        try
+        if (curve.getA().getFieldName() == "Ed25519Field")
         {
-            factk = helper.createKeyFactory("ECDSA");
+            try
+            {
+                factk = helper.createKeyFactory("EDDSA");
+            }
+            catch (NoSuchProviderException e)
+            {
+                throw new EACException("cannot find provider: " + e.getMessage(), e);
+            }
+            catch (NoSuchAlgorithmException e)
+            {
+                throw new EACException("cannot find algorithm EDDSA: " + e.getMessage(), e);
+            }
         }
-        catch (NoSuchProviderException e)
+        else
         {
-            throw new EACException("cannot find provider: " + e.getMessage(), e);
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            throw new EACException("cannot find algorithm ECDSA: " + e.getMessage(), e);
+            try
+            {
+                factk = helper.createKeyFactory("ECDSA");
+            }
+            catch (NoSuchProviderException e)
+            {
+                throw new EACException("cannot find provider: " + e.getMessage(), e);
+            }
+            catch (NoSuchAlgorithmException e)
+            {
+                throw new EACException("cannot find algorithm ECDSA: " + e.getMessage(), e);
+            }
         }
 
         return factk.generatePublic(pubKeySpec);

@@ -82,9 +82,13 @@ public class BcPGPKeyConverter
             {                                                   // TODO: KDF parameters setting
                 bcpgKey = new ECDHPublicBCPGKey(((ECNamedDomainParameters)eK.getParameters()).getName(), eK.getQ(), HashAlgorithmTags.SHA256, SymmetricKeyAlgorithmTags.AES_128);
             }
-            else
+            else if (algorithm == PGPPublicKey.ECDSA)
             {
                 bcpgKey = new ECDSAPublicBCPGKey(((ECNamedDomainParameters)eK.getParameters()).getName(), eK.getQ());
+            }
+            else if (algorithm == PGPPublicKey.EDDSA)
+            {
+                bcpgKey = new EDDSAPublicBCPGKey(((ECNamedDomainParameters)eK.getParameters()).getName(), eK.getQ());
             }
         }
         else
@@ -122,6 +126,7 @@ public class BcPGPKeyConverter
             break;
         case PGPPublicKey.ECDH:
         case PGPPublicKey.ECDSA:
+        case PGPPublicKey.EDDSA:
             ECPrivateKeyParameters ecK = (ECPrivateKeyParameters)privKey;
 
             privPk = new ECSecretBCPGKey(ecK.getD());
@@ -158,6 +163,7 @@ public class BcPGPKeyConverter
                 return new ElGamalPublicKeyParameters(elK.getY(), new ElGamalParameters(elK.getP(), elK.getG()));
             case PGPPublicKey.ECDH:
             case PGPPublicKey.ECDSA:
+            case PGPPublicKey.EDDSA:
                 ECPublicBCPGKey ecPub = (ECPublicBCPGKey)publicPk.getKey();
 
                 X9ECParameters x9 = CustomNamedCurves.getByOID(ecPub.getCurveOID());
@@ -212,6 +218,7 @@ public class BcPGPKeyConverter
                 return new ElGamalPrivateKeyParameters(elPriv.getX(), new ElGamalParameters(elPub.getP(), elPub.getG()));
             case PGPPublicKey.ECDH:
             case PGPPublicKey.ECDSA:
+            case PGPPublicKey.EDDSA:
                 ECPublicBCPGKey ecPub = (ECPublicBCPGKey)pubPk.getKey();
                 ECSecretBCPGKey ecPriv = (ECSecretBCPGKey)privPk;
 

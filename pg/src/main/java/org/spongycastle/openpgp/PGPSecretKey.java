@@ -947,7 +947,7 @@ public class PGPSecretKey
                }
 
                PublicKeyPacket pubPacket;
-               if (curveName.startsWith("Ed25519"))
+               if (curveName.startsWith("ed25519"))
                {
                     pubPacket = new PublicKeyPacket(PublicKeyAlgorithmTags.EDDSA, new Date(), new ECDSAPublicBCPGKey(ECNamedCurveTable.getOID(curveName), new BigInteger(1, qVal)));
                }

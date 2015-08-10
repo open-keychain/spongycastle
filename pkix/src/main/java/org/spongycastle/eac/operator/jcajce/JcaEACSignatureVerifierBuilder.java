@@ -80,7 +80,7 @@ public class JcaEACSignatureVerifierBuilder
             {
                 try
                 {
-                    if (usageOid.on(EACObjectIdentifiers.id_TA_ECDSA))
+                    if (usageOid.on(EACObjectIdentifiers.id_TA_ECDSA) || usageOid.on(EACObjectIdentifiers.id_TA_EDDSA))
                     {
                         try
                         {
