@@ -166,8 +166,6 @@ class BcImplProvider
             throw new PGPException("Can't use DSA for encryption.");
         case PGPPublicKey.ECDSA:
             throw new PGPException("Can't use ECDSA for encryption.");
-        case PGPPublicKey.EDDSA:
-            throw new PGPException("Can't use EDDSA for encryption.");
         case PGPPublicKey.ECDH:
             throw new PGPException("Not implemented.");
         default:

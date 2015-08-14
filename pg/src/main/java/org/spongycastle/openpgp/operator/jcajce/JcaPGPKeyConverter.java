@@ -133,7 +133,7 @@ public class JcaPGPKeyConverter
             case PublicKeyAlgorithmTags.EDDSA:
                 EDDSAPublicBCPGKey eddsaK = (EDDSAPublicBCPGKey)publicPk.getKey();
                 ECPublicKeySpec edDsaSpec = new ECPublicKeySpec(
-                    new java.security.spec.ECPoint(eddsaK.getPoint().getX().toBigInteger(), eddsaK.getPoint().getY().toBigInteger()),
+                    new java.security.spec.ECPoint(eddsaK.getPoint().getAffineXCoord().toBigInteger(), eddsaK.getPoint().getAffineYCoord().toBigInteger()),
                     getX9Parameters(eddsaK.getCurveOID()));
                 fact = helper.createKeyFactory("EDDSA");
 
