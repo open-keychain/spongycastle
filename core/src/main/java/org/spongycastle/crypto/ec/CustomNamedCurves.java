@@ -50,11 +50,11 @@ public class CustomNamedCurves
             /*
              * NOTE: Curve25519 was specified in Montgomery form. Rewriting in Weierstrass form
              * involves substitution of variables, so the base-point x coordinate is 9 + (486662 / 3).
-             * 
+             *
              * The Curve25519 paper doesn't say which of the two possible y values the base
              * point has. The choice here is guided by language in the Ed25519 paper.
-             * 
-             * (The other possible y value is 5F51E65E475F794B1FE122D388B72EB36DC2B28192839E4DD6163A5D81312C14) 
+             *
+             * (The other possible y value is 5F51E65E475F794B1FE122D388B72EB36DC2B28192839E4DD6163A5D81312C14)
              */
             ECPoint G = curve.decodePoint(Hex.decode("04"
                 + "2AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD245A"
@@ -274,7 +274,7 @@ public class CustomNamedCurves
     static
     {
         defineCurveWithOID("curve25519", new ASN1ObjectIdentifier("1.3.132.0.40"), curve25519);
-        defineCurveWithOID("ed25519", new ASN1ObjectIdentifier("1.3.132.0.41"), ed25519);
+        defineCurveWithOID("ed25519", new ASN1ObjectIdentifier("1.3.6.1.4.1.11591.15.1"), ed25519);
 
         defineCurveWithOID("secp192k1", SECObjectIdentifiers.secp192k1, secp192k1);
         defineCurveWithOID("secp192r1", SECObjectIdentifiers.secp192r1, secp192r1);
@@ -301,7 +301,7 @@ public class CustomNamedCurves
     /**
      * return the X9ECParameters object for the named curve represented by the passed in object
      * identifier. Null if the curve isn't present.
-     * 
+     *
      * @param oid
      *            an object identifier representing a named curve, if present.
      */
@@ -314,7 +314,7 @@ public class CustomNamedCurves
     /**
      * return the object identifier signified by the passed in name. Null if there is no object
      * identifier associated with name.
-     * 
+     *
      * @return the object identifier associated with name, if present.
      */
     public static ASN1ObjectIdentifier getOID(String name)

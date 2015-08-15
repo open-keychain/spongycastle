@@ -114,7 +114,7 @@ public class EDDSASigner
         return expmod(x, qm2, q);
     }
 
-    static BigInteger xrecover(BigInteger y) {
+    public static BigInteger xrecover(BigInteger y) {
         BigInteger y2 = y.multiply(y);
         BigInteger xx = (y2.subtract(BigInteger.ONE)).multiply(inv(d.multiply(y2).add(BigInteger.ONE)));
         BigInteger x = expmod(xx, qp3.divide(BigInteger.valueOf(8)), q);
@@ -242,6 +242,7 @@ public class EDDSASigner
         BigInteger[] R,A;
         try
         {
+            System.out.println("Rb:" + Rb);
             R = decodepoint(Rb.toByteArray());
         }
         catch (Exception e)

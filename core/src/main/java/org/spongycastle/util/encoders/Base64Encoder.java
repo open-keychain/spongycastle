@@ -26,7 +26,7 @@ public class Base64Encoder
     };
 
     protected byte    padding = (byte)'=';
-    
+
     /*
      * set up the decoding table.
      */
@@ -38,18 +38,18 @@ public class Base64Encoder
         {
             decodingTable[i] = (byte)0xff;
         }
-        
+
         for (int i = 0; i < encodingTable.length; i++)
         {
             decodingTable[encodingTable[i]] = (byte)i;
         }
     }
-    
+
     public Base64Encoder()
     {
         initialiseDecodingTable();
     }
-    
+
     /**
      * encode the input data producing a base 64 output stream.
      *
@@ -59,13 +59,13 @@ public class Base64Encoder
         byte[]                data,
         int                    off,
         int                    length,
-        OutputStream    out) 
+        OutputStream    out)
         throws IOException
     {
         int modulus = length % 3;
         int dataLength = (length - modulus);
         int a1, a2, a3;
-        
+
         for (int i = off; i < off + dataLength; i += 3)
         {
             a1 = data[i] & 0xff;
@@ -121,7 +121,7 @@ public class Base64Encoder
     {
         return (c == '\n' || c =='\r' || c == '\t' || c == ' ');
     }
-    
+
     /**
      * decode the base 64 encoded byte data writing it to the given output stream,
      * whitespace characters will be ignored.
@@ -137,56 +137,56 @@ public class Base64Encoder
     {
         byte    b1, b2, b3, b4;
         int     outLen = 0;
-        
+
         int     end = off + length;
-        
+
         while (end > off)
         {
             if (!ignore((char)data[end - 1]))
             {
                 break;
             }
-            
+
             end--;
         }
-        
+
         int  i = off;
         int  finish = end - 4;
-        
+
         i = nextI(data, i, finish);
 
         while (i < finish)
         {
             b1 = decodingTable[data[i++]];
-            
+
             i = nextI(data, i, finish);
-            
+
             b2 = decodingTable[data[i++]];
-            
+
             i = nextI(data, i, finish);
-            
+
             b3 = decodingTable[data[i++]];
-            
+
             i = nextI(data, i, finish);
-            
+
             b4 = decodingTable[data[i++]];
 
             if ((b1 | b2 | b3 | b4) < 0)
             {
                 throw new IOException("invalid characters encountered in base64 data");
             }
-            
+
             out.write((b1 << 2) | (b2 >> 4));
             out.write((b2 << 4) | (b3 >> 2));
             out.write((b3 << 6) | b4);
-            
+
             outLen += 3;
-            
+
             i = nextI(data, i, finish);
         }
 
         outLen += decodeLastBlock(out, (char)data[end - 4], (char)data[end - 3], (char)data[end - 2], (char)data[end - 1]);
-        
+
         return outLen;
     }
 
@@ -198,7 +198,7 @@ public class Base64Encoder
         }
         return i;
     }
-    
+
     /**
      * decode the base 64 encoded String data writing it to the given output stream,
      * whitespace characters will be ignored.
@@ -212,51 +212,51 @@ public class Base64Encoder
     {
         byte    b1, b2, b3, b4;
         int     length = 0;
-        
+
         int     end = data.length();
-        
+
         while (end > 0)
         {
             if (!ignore(data.charAt(end - 1)))
             {
                 break;
             }
-            
+
             end--;
         }
-        
+
         int  i = 0;
         int  finish = end - 4;
-        
+
         i = nextI(data, i, finish);
-        
+
         while (i < finish)
         {
             b1 = decodingTable[data.charAt(i++)];
-            
+
             i = nextI(data, i, finish);
-            
+
             b2 = decodingTable[data.charAt(i++)];
-            
+
             i = nextI(data, i, finish);
-            
+
             b3 = decodingTable[data.charAt(i++)];
-            
+
             i = nextI(data, i, finish);
-            
+
             b4 = decodingTable[data.charAt(i++)];
 
             if ((b1 | b2 | b3 | b4) < 0)
             {
                 throw new IOException("invalid characters encountered in base64 data");
             }
-               
+
             out.write((b1 << 2) | (b2 >> 4));
             out.write((b2 << 4) | (b3 >> 2));
             out.write((b3 << 6) | b4);
-            
+
             length += 3;
-            
+
             i = nextI(data, i, finish);
         }
 
@@ -265,11 +265,11 @@ public class Base64Encoder
         return length;
     }
 
-    private int decodeLastBlock(OutputStream out, char c1, char c2, char c3, char c4) 
+    private int decodeLastBlock(OutputStream out, char c1, char c2, char c3, char c4)
         throws IOException
     {
         byte    b1, b2, b3, b4;
-        
+
         if (c3 == padding)
         {
             b1 = decodingTable[c1];
@@ -281,7 +281,7 @@ public class Base64Encoder
             }
 
             out.write((b1 << 2) | (b2 >> 4));
-            
+
             return 1;
         }
         else if (c4 == padding)
@@ -294,10 +294,10 @@ public class Base64Encoder
             {
                 throw new IOException("invalid characters encountered at end of base64 data");
             }
-            
+
             out.write((b1 << 2) | (b2 >> 4));
             out.write((b2 << 4) | (b3 >> 2));
-            
+
             return 2;
         }
         else
@@ -311,13 +311,13 @@ public class Base64Encoder
             {
                 throw new IOException("invalid characters encountered at end of base64 data");
             }
-            
+
             out.write((b1 << 2) | (b2 >> 4));
             out.write((b2 << 4) | (b3 >> 2));
             out.write((b3 << 6) | b4);
-            
+
             return 3;
-        } 
+        }
     }
 
     private int nextI(String data, int i, int finish)
