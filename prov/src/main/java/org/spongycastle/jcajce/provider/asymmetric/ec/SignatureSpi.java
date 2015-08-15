@@ -102,6 +102,15 @@ public class SignatureSpi
         }
     }
 
+    static public class edDSA224
+        extends SignatureSpi
+    {
+        public edDSA224()
+        {
+            super(new SHA224Digest(), new EDDSASigner(), new StdDSAEncoder());
+        }
+    }
+
     static public class ecDetDSA224
         extends SignatureSpi
     {
@@ -117,6 +126,15 @@ public class SignatureSpi
         public ecDSA256()
         {
             super(new SHA256Digest(), new ECDSASigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDSA256
+        extends SignatureSpi
+    {
+        public edDSA256()
+        {
+            super(new SHA256Digest(), new EDDSASigner(), new StdDSAEncoder());
         }
     }
 
@@ -138,6 +156,15 @@ public class SignatureSpi
         }
     }
 
+    static public class edDSA384
+        extends SignatureSpi
+    {
+        public edDSA384()
+        {
+            super(new SHA384Digest(), new EDDSASigner(), new StdDSAEncoder());
+        }
+    }
+
     static public class ecDetDSA384
         extends SignatureSpi
     {
@@ -153,6 +180,15 @@ public class SignatureSpi
         public ecDSA512()
         {
             super(new SHA512Digest(), new ECDSASigner(), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDSA512
+        extends SignatureSpi
+    {
+        public edDSA512()
+        {
+            super(new SHA512Digest(), new EDDSASigner(), new StdDSAEncoder());
         }
     }
 

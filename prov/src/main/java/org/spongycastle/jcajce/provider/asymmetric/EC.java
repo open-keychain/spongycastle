@@ -93,6 +93,11 @@ public class EC
             addSignatureAlgorithm(provider, "SHA512", "ECDSA", PREFIX + "SignatureSpi$ecDSA512", X9ObjectIdentifiers.ecdsa_with_SHA512);
             addSignatureAlgorithm(provider, "RIPEMD160", "ECDSA", PREFIX + "SignatureSpi$ecDSARipeMD160",TeleTrusTObjectIdentifiers.ecSignWithRipemd160);
 
+            addSignatureAlgorithm(provider, "SHA224", "EDDSA", PREFIX + "SignatureSpi$edDSA224", X9ObjectIdentifiers.eddsa_with_SHA224);
+            addSignatureAlgorithm(provider, "SHA256", "EDDSA", PREFIX + "SignatureSpi$edDSA256", X9ObjectIdentifiers.eddsa_with_SHA256);
+            addSignatureAlgorithm(provider, "SHA384", "EDDSA", PREFIX + "SignatureSpi$edDSA384", X9ObjectIdentifiers.eddsa_with_SHA384);
+            addSignatureAlgorithm(provider, "SHA512", "EDDSA", PREFIX + "SignatureSpi$edDSA512", X9ObjectIdentifiers.eddsa_with_SHA512);
+
             provider.addAlgorithm("Signature.SHA1WITHECNR", PREFIX + "SignatureSpi$ecNR");
             provider.addAlgorithm("Signature.SHA224WITHECNR", PREFIX + "SignatureSpi$ecNR224");
             provider.addAlgorithm("Signature.SHA256WITHECNR", PREFIX + "SignatureSpi$ecNR256");

@@ -67,7 +67,16 @@ public interface X9ObjectIdentifiers
     static final ASN1ObjectIdentifier eddsa_with_SHA2 = id_ecSigType.branch("5");
 
     /** OID: 1.2.840.10045.4.5.1 */
-    static final ASN1ObjectIdentifier eddsa_with_SHA256 = eddsa_with_SHA2.branch("1");
+    static final ASN1ObjectIdentifier eddsa_with_SHA224 = eddsa_with_SHA2.branch("1");
+
+    /** OID: 1.2.840.10045.4.5.2 */
+    static final ASN1ObjectIdentifier eddsa_with_SHA256 = eddsa_with_SHA2.branch("2");
+
+    /** OID: 1.2.840.10045.4.5.3 */
+    static final ASN1ObjectIdentifier eddsa_with_SHA384 = eddsa_with_SHA2.branch("3");
+
+    /** OID: 1.2.840.10045.4.5.4 */
+    static final ASN1ObjectIdentifier eddsa_with_SHA512 = eddsa_with_SHA2.branch("4");
 
     /**
      * Named curves base

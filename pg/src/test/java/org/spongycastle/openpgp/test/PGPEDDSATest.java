@@ -64,7 +64,7 @@ public class PGPEDDSATest
         //
         // try a signature
         //
-        PGPSignatureGenerator signGen = new PGPSignatureGenerator(new JcaPGPContentSignerBuilder(PGPPublicKey.EDDSA, HashAlgorithmTags.SHA256).setProvider("SC"));
+        PGPSignatureGenerator signGen = new PGPSignatureGenerator(new JcaPGPContentSignerBuilder(PGPPublicKey.EDDSA, HashAlgorithmTags.SHA512).setProvider("SC"));
 
         signGen.init(PGPSignature.BINARY_DOCUMENT, ecdsaKeyPair.getPrivateKey());
 
