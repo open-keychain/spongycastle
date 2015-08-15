@@ -242,7 +242,10 @@ public class EDDSASigner
         BigInteger[] R,A;
         try
         {
+<<<<<<< HEAD
             System.out.println("Rb:" + Rb);
+=======
+>>>>>>> 068a810ba96dc5904036b73ca26a8e35ee0e46ec
             R = decodepoint(Rb.toByteArray());
         }
         catch (Exception e)
