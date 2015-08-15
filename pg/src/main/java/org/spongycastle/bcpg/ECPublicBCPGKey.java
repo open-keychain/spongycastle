@@ -30,6 +30,15 @@ public abstract class ECPublicBCPGKey
         BCPGInputStream in)
         throws IOException
     {
+            StackTraceElement ste = Thread.currentThread().getStackTrace()[2];
+            StringBuilder sb = new StringBuilder();
+            sb.append(ste.getMethodName())        // メソッド名取得
+                .append("(")
+                .append(ste.getFileName())        // ファイル名取得
+                .append(":")
+                .append(ste.getLineNumber())    // 行番号取得
+                .append(")");
+            System.out.println(sb.toString());
         this.oid = ASN1ObjectIdentifier.getInstance(ASN1Primitive.fromByteArray(readBytesOfEncodedLength(in)));
         this.point = decodePoint(new MPInteger(in).getValue(), oid);
     }
@@ -133,6 +142,15 @@ public abstract class ECPublicBCPGKey
         ASN1ObjectIdentifier oid)
         throws IOException
     {
+            StackTraceElement ste = Thread.currentThread().getStackTrace()[2];
+            StringBuilder sb = new StringBuilder();
+            sb.append(ste.getMethodName())        // メソッド名取得
+                .append("(")
+                .append(ste.getFileName())        // ファイル名取得
+                .append(":")
+                .append(ste.getLineNumber())    // 行番号取得
+                .append(")");
+            System.out.println(sb.toString());
         X9ECParameters x9 = CustomNamedCurves.getByOID(oid);
         if (x9 == null)
         {

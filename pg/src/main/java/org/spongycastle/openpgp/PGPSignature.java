@@ -29,12 +29,12 @@ public class PGPSignature
     public static final int    BINARY_DOCUMENT = 0x00;
     public static final int    CANONICAL_TEXT_DOCUMENT = 0x01;
     public static final int    STAND_ALONE = 0x02;
-    
+
     public static final int    DEFAULT_CERTIFICATION = 0x10;
     public static final int    NO_CERTIFICATION = 0x11;
     public static final int    CASUAL_CERTIFICATION = 0x12;
     public static final int    POSITIVE_CERTIFICATION = 0x13;
-    
+
     public static final int    SUBKEY_BINDING = 0x18;
     public static final int    PRIMARYKEY_BINDING = 0x19;
     public static final int    DIRECT_KEY = 0x1f;
@@ -42,7 +42,7 @@ public class PGPSignature
     public static final int    SUBKEY_REVOCATION = 0x28;
     public static final int    CERTIFICATION_REVOCATION = 0x30;
     public static final int    TIMESTAMP = 0x40;
-    
+
     private SignaturePacket    sigPck;
     private int                signatureType;
     private TrustPacket        trustPck;
@@ -56,7 +56,7 @@ public class PGPSignature
     {
         this((SignaturePacket)pIn.readPacket());
     }
-    
+
     PGPSignature(
         SignaturePacket    sigPacket)
         throws PGPException
@@ -65,27 +65,27 @@ public class PGPSignature
         signatureType = sigPck.getSignatureType();
         trustPck = null;
     }
-    
+
     PGPSignature(
         SignaturePacket    sigPacket,
         TrustPacket        trustPacket)
         throws PGPException
     {
         this(sigPacket);
-        
+
         this.trustPck = trustPacket;
     }
 
     /**
      * Return the OpenPGP version number for this signature.
-     * 
+     *
      * @return signature version number.
      */
     public int getVersion()
     {
         return sigPck.getVersion();
     }
-    
+
     /**
      * Return the key algorithm associated with this signature.
      * @return signature key algorithm.
@@ -94,7 +94,7 @@ public class PGPSignature
     {
         return sigPck.getKeyAlgorithm();
     }
-    
+
     /**
      * Return the hash algorithm associated with this signature.
      * @return signature hash algorithm.
@@ -145,13 +145,13 @@ public class PGPSignature
             byteUpdate(b);
         }
     }
-        
+
     public void update(
         byte[]    bytes)
     {
         this.update(bytes, 0, bytes.length);
     }
-        
+
     public void update(
         byte[]    bytes,
         int       off,
@@ -160,7 +160,7 @@ public class PGPSignature
         if (signatureType == PGPSignature.CANONICAL_TEXT_DOCUMENT)
         {
             int finish = off + length;
-            
+
             for (int i = off; i != finish; i++)
             {
                 this.update(bytes[i]);
@@ -223,7 +223,7 @@ public class PGPSignature
         this.update((byte)(idBytes.length));
         this.update(idBytes);
     }
-    
+
     private void updateWithPublicKey(PGPPublicKey key)
         throws PGPException
     {
@@ -282,7 +282,7 @@ public class PGPSignature
     /**
      * Verify the signature as certifying the passed in public key as associated
      * with the passed in id.
-     * 
+     *
      * @param id id the key was stored under
      * @param key the key to be verified.
      * @return true if the signature matches, false otherwise.
@@ -299,7 +299,7 @@ public class PGPSignature
         }
 
         updateWithPublicKey(key);
-            
+
         //
         // hash in the id
         //
@@ -338,13 +338,15 @@ public class PGPSignature
 
         addTrailer();
 
+        System.out.println("verifyCertification");
+
         return verifier.verify(this.getSignature());
     }
 
     /**
      * Verify a certification for the passed in key against the passed in
      * master key.
-     * 
+     *
      * @param masterKey the key we are verifying against.
      * @param pubKey the key we are verifying.
      * @return true if the certification is valid, false otherwise.
@@ -352,7 +354,7 @@ public class PGPSignature
      */
     public boolean verifyCertification(
         PGPPublicKey    masterKey,
-        PGPPublicKey    pubKey) 
+        PGPPublicKey    pubKey)
         throws PGPException
     {
         if (verifier == null)
@@ -384,13 +386,13 @@ public class PGPSignature
 
     /**
      * Verify a key certification, such as a revocation, for the passed in key.
-     * 
+     *
      * @param pubKey the key we are checking.
      * @return true if the certification is valid, false otherwise.
      * @throws PGPException
      */
     public boolean verifyCertification(
-        PGPPublicKey    pubKey) 
+        PGPPublicKey    pubKey)
         throws PGPException
     {
         if (verifier == null)
@@ -416,7 +418,7 @@ public class PGPSignature
     {
          return sigPck.getSignatureType();
     }
-    
+
     /**
      * Return the id of the key that created the signature.
      * @return keyID of the signatures corresponding key.
@@ -425,17 +427,17 @@ public class PGPSignature
     {
          return sigPck.getKeyID();
     }
-    
+
     /**
      * Return the creation time of the signature.
-     * 
+     *
      * @return the signature creation time.
      */
     public Date getCreationTime()
     {
         return new Date(sigPck.getCreationTime());
     }
-    
+
     public byte[] getSignatureTrailer()
     {
         return sigPck.getSignatureTrailer();
@@ -443,7 +445,7 @@ public class PGPSignature
 
     /**
      * Return true if the signature has either hashed or unhashed subpackets.
-     * 
+     *
      * @return true if either hashed or unhashed subpackets are present, false otherwise.
      */
     public boolean hasSubpackets()
@@ -460,17 +462,17 @@ public class PGPSignature
     {
         return createSubpacketVector(sigPck.getUnhashedSubPackets());
     }
-    
+
     private PGPSignatureSubpacketVector createSubpacketVector(SignatureSubpacket[] pcks)
     {
         if (pcks != null)
         {
             return new PGPSignatureSubpacketVector(pcks);
         }
-        
+
         return null;
     }
-    
+
     public byte[] getSignature()
         throws PGPException
     {
@@ -503,26 +505,26 @@ public class PGPSignature
         {
             signature = sigPck.getSignatureBytes();
         }
-        
+
         return signature;
     }
-    
-    public byte[] getEncoded() 
+
+    public byte[] getEncoded()
         throws IOException
     {
         ByteArrayOutputStream    bOut = new ByteArrayOutputStream();
-        
+
         this.encode(bOut);
-        
+
         return bOut.toByteArray();
     }
-    
+
     public void encode(
-        OutputStream    outStream) 
+        OutputStream    outStream)
         throws IOException
     {
         BCPGOutputStream    out;
-        
+
         if (outStream instanceof BCPGOutputStream)
         {
             out = (BCPGOutputStream)outStream;
@@ -538,13 +540,13 @@ public class PGPSignature
             out.writePacket(trustPck);
         }
     }
-    
+
     private byte[] getEncodedPublicKey(
-        PGPPublicKey pubKey) 
+        PGPPublicKey pubKey)
         throws PGPException
     {
         byte[]    keyBytes;
-        
+
         try
         {
             keyBytes = pubKey.publicPk.getEncodedContents();
@@ -553,7 +555,7 @@ public class PGPSignature
         {
             throw new PGPException("exception preparing key.", e);
         }
-        
+
         return keyBytes;
     }
 }

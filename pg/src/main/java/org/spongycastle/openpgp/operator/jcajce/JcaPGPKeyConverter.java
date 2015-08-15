@@ -131,6 +131,7 @@ public class JcaPGPKeyConverter
 
                 return fact.generatePublic(ecDsaSpec);
             case PublicKeyAlgorithmTags.EDDSA:
+                System.out.println("getPublicKey");
                 EDDSAPublicBCPGKey eddsaK = (EDDSAPublicBCPGKey)publicPk.getKey();
                 ECPublicKeySpec edDsaSpec = new ECPublicKeySpec(
                     new java.security.spec.ECPoint(eddsaK.getPoint().getAffineXCoord().toBigInteger(), eddsaK.getPoint().getAffineYCoord().toBigInteger()),
@@ -219,6 +220,7 @@ public class JcaPGPKeyConverter
             {
                 if (algorithm == PGPPublicKey.EDDSA)
                 {
+                    System.out.println("getPGPPublicKey 1");
                     bcpgKey = new EDDSAPublicBCPGKey(curveOid, derQ.getPoint());
                 }
                 else
@@ -315,6 +317,7 @@ public class JcaPGPKeyConverter
 
                 return fact.generatePrivate(ecDsaSpec);
             case PublicKeyAlgorithmTags.EDDSA:
+                System.out.println("getPrivateKey");
                 EDDSAPublicBCPGKey eddsaPub = (EDDSAPublicBCPGKey)pubPk.getKey();
                 ECSecretBCPGKey eddsaK = (ECSecretBCPGKey)privPk;
                 ECPrivateKeySpec edDsaSpec = new ECPrivateKeySpec(

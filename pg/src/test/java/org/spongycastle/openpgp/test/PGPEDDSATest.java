@@ -53,6 +53,7 @@ public class PGPEDDSATest
     public void performTest()
         throws Exception
     {
+        System.out.println("import before 1");
         KeyPairGenerator        keyGen = KeyPairGenerator.getInstance("EDDSA", "SC");
 
         keyGen.initialize(new ECGenParameterSpec("ed25519"));
@@ -81,6 +82,8 @@ public class PGPEDDSATest
             fail("signature failed to verify!");
         }
 
+        System.out.println("import before 2");
+
         //
         // generate a key ring
         //
@@ -102,12 +105,16 @@ public class PGPEDDSATest
             fail("public key ring encoding failed");
         }
 
+        System.out.println("import before 3");
+
         PGPSecretKeyRing secRingEnc = new PGPSecretKeyRing(secRing.getEncoded(), fingerCalc);
 
         if (!Arrays.areEqual(secRing.getEncoded(), secRingEnc.getEncoded()))
         {
             fail("secret key ring encoding failed");
         }
+
+        System.out.println("import before 4");
 
 
         //
@@ -125,10 +132,66 @@ public class PGPEDDSATest
 
         sig.update("hello world!".getBytes());
 
+        System.out.println("import before 5");
+
         if (!sig.verify())
         {
             fail("re-encoded signature failed to verify!");
         }
+
+        importKeyTest();
+    }
+
+    private void importKeyTest()
+        throws Exception
+    {
+        System.out.println("import before");
+
+        byte[] testPubKey =
+            Base64.decode(
+                "mDMEU/NfCxYJKwYBBAHaRw8BAQdAPwmJlL3ZFu1AUxl5NOSofIBzOhKA1i+AEJku" +
+                "Q+47JAa0NEVkRFNBIHNhbXBsZSBrZXkgMSAoZHJhZnQta29jaC1lZGRzYS1mb3It" +
+                "b3BlbnBncC0wMCmIeQQTFggAIQUCU/NfCwIbAwULCQgHAgYVCAkKCwIEFgIDAQIe" +
+                "AQIXgAAKCRCM/eEhl5ZamnNOAP9pKn5wz3jPsgy9p65zxz1+xJEr/cczFQx/tYkk" +
+                "49tkeAD+P9jJE4SFD2lVofxn1e22H7YLvcVyHDOA9gpYWTNXiAU=");
+
+        byte[] testPrivKey =
+            Base64.decode(
+                "lIYEU/NfCxYJKwYBBAHaRw8BAQdAPwmJlL3ZFu1AUxl5NOSofIBzOhKA1i+AEJku" +
+                "Q+47JAb+BwMCeZTNZ5R2udDknlhWE5VnJaHe+HFieLlfQA+nibymcJS5lTYL7NP+" +
+                "3CY63ylHwHoS7PuPLpdbEvROJ60u6+a/bSe86jRcJODR6rN2iG9v5LQ0RWREU0Eg" +
+                "c2FtcGxlIGtleSAxIChkcmFmdC1rb2NoLWVkZHNhLWZvci1vcGVucGdwLTAwKYh5" +
+                "BBMWCAAhBQJT818LAhsDBQsJCAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEIz94SGX" +
+                "llqac04A/2kqfnDPeM+yDL2nrnPHPX7EkSv9xzMVDH+1iSTj22R4AP4/2MkThIUP" +
+                "aVWh/GfV7bYftgu9xXIcM4D2ClhZM1eIBQ==");
+
+        System.out.println("import");
+
+        PGPUtil.setDefaultProvider("SC");
+
+        //
+        // Read the public key
+        //
+        PGPPublicKeyRing        pubKeyRing = new PGPPublicKeyRing(testPubKey, new JcaKeyFingerprintCalculator());
+
+        System.out.println("after make ring");
+
+        for (Iterator it = pubKeyRing.getPublicKey().getSignatures(); it.hasNext();)
+        {
+            PGPSignature certification = (PGPSignature)it.next();
+
+            certification.init(new JcaPGPContentVerifierBuilderProvider().setProvider("SC"), pubKeyRing.getPublicKey());
+
+            if (!certification.verifyCertification((String)pubKeyRing.getPublicKey().getUserIDs().next(), pubKeyRing.getPublicKey()))
+            {
+                fail("self certification does not verify");
+            }
+        }
+
+        //
+        // Read the private key
+        //
+        PGPSecretKeyRing        secretKeyRing = new PGPSecretKeyRing(testPrivKey, new JcaKeyFingerprintCalculator());
     }
 
     public String getName()

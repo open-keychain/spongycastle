@@ -32,6 +32,7 @@ public class PGPPublicKeyRing
         KeyFingerPrintCalculator fingerPrintCalculator)
         throws IOException
     {
+        System.out.println("PGPPublicKeyRing begin");
         this(new ByteArrayInputStream(encoding), fingerPrintCalculator);
     }
 
@@ -49,6 +50,7 @@ public class PGPPublicKeyRing
         KeyFingerPrintCalculator fingerPrintCalculator)
         throws IOException
     {
+        System.out.println("PGPPublicKeyRing begin 2");
         this.keys = new ArrayList();
 
         BCPGInputStream pIn = wrap(in);
@@ -90,73 +92,73 @@ public class PGPPublicKeyRing
 
     /**
      * Return the first public key in the ring.
-     * 
+     *
      * @return PGPPublicKey
      */
     public PGPPublicKey getPublicKey()
     {
         return (PGPPublicKey)keys.get(0);
     }
-    
+
     /**
      * Return the public key referred to by the passed in keyID if it
      * is present.
-     * 
+     *
      * @param keyID
      * @return PGPPublicKey
      */
     public PGPPublicKey getPublicKey(
         long        keyID)
-    {    
+    {
         for (int i = 0; i != keys.size(); i++)
         {
             PGPPublicKey    k = (PGPPublicKey)keys.get(i);
-            
+
             if (keyID == k.getKeyID())
             {
                 return k;
             }
         }
-    
+
         return null;
     }
-    
+
     /**
      * Return an iterator containing all the public keys.
-     * 
+     *
      * @return Iterator
      */
     public Iterator getPublicKeys()
     {
         return Collections.unmodifiableList(keys).iterator();
     }
-    
-    public byte[] getEncoded() 
+
+    public byte[] getEncoded()
         throws IOException
     {
         ByteArrayOutputStream    bOut = new ByteArrayOutputStream();
-        
+
         this.encode(bOut);
-        
+
         return bOut.toByteArray();
     }
-    
+
     public void encode(
-        OutputStream    outStream) 
+        OutputStream    outStream)
         throws IOException
     {
         for (int i = 0; i != keys.size(); i++)
         {
             PGPPublicKey    k = (PGPPublicKey)keys.get(i);
-            
+
             k.encode(outStream);
         }
     }
-    
+
     /**
      * Returns a new key ring with the public key passed in
      * either added or replacing an existing one.
-     * 
+     *
      * @param pubRing the public key ring to be modified
      * @param pubKey the public key to be inserted.
      * @return a new keyRing
@@ -172,7 +174,7 @@ public class PGPPublicKeyRing
         for (int i = 0; i != keys.size();i++)
         {
             PGPPublicKey   key = (PGPPublicKey)keys.get(i);
-            
+
             if (key.getKeyID() == pubKey.getKeyID())
             {
                 found = true;
@@ -200,14 +202,14 @@ public class PGPPublicKeyRing
                 keys.add(pubKey);
             }
         }
-        
+
         return new PGPPublicKeyRing(keys);
     }
-    
+
     /**
      * Returns a new key ring with the public key passed in
      * removed from the key ring.
-     * 
+     *
      * @param pubRing the public key ring to be modified
      * @param pubKey the public key to be removed.
      * @return a new keyRing, null if pubKey is not found.
@@ -218,23 +220,23 @@ public class PGPPublicKeyRing
     {
         List       keys = new ArrayList(pubRing.keys);
         boolean    found = false;
-        
+
         for (int i = 0; i < keys.size();i++)
         {
             PGPPublicKey   key = (PGPPublicKey)keys.get(i);
-            
+
             if (key.getKeyID() == pubKey.getKeyID())
             {
                 found = true;
                 keys.remove(i);
             }
         }
-        
+
         if (!found)
         {
             return null;
         }
-        
+
         return new PGPPublicKeyRing(keys);
     }
 

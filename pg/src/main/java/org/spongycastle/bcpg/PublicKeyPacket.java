@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * basic packet for a PGP public key
  */
-public class PublicKeyPacket 
+public class PublicKeyPacket
     extends ContainedPacket implements PublicKeyAlgorithmTags
 {
     private int            version;
@@ -15,19 +15,19 @@ public class PublicKeyPacket
     private int            validDays;
     private int            algorithm;
     private BCPGKey        key;
-    
+
     PublicKeyPacket(
         BCPGInputStream    in)
         throws IOException
-    {      
+    {
         version = in.read();
         time = ((long)in.read() << 24) | (in.read() << 16) | (in.read() << 8) | in.read();
- 
+
         if (version <= 3)
         {
             validDays = (in.read() << 8) | in.read();
         }
-        
+
         algorithm = (byte)in.read();
 
         switch (algorithm)
@@ -51,16 +51,25 @@ public class PublicKeyPacket
             key = new ECDSAPublicBCPGKey(in);
             break;
         case EDDSA:
+            StackTraceElement ste = Thread.currentThread().getStackTrace()[2];
+            StringBuilder sb = new StringBuilder();
+            sb.append(ste.getMethodName())        // メソッド名取得
+                .append("(")
+                .append(ste.getFileName())        // ファイル名取得
+                .append(":")
+                .append(ste.getLineNumber())    // 行番号取得
+                .append(")");
+            System.out.println(sb.toString());
             key = new EDDSAPublicBCPGKey(in);
             break;
         default:
             throw new IOException("unknown PGP public key algorithm encountered");
         }
     }
-    
+
     /**
      * Construct version 4 public key packet.
-     * 
+     *
      * @param algorithm
      * @param time
      * @param key
@@ -75,58 +84,58 @@ public class PublicKeyPacket
         this.algorithm = algorithm;
         this.key = key;
     }
-    
+
     public int getVersion()
     {
         return version;
     }
-    
+
     public int getAlgorithm()
     {
         return algorithm;
     }
-    
+
     public int getValidDays()
     {
         return validDays;
     }
-    
+
     public Date getTime()
     {
         return new Date(time * 1000);
     }
-    
+
     public BCPGKey getKey()
     {
         return key;
     }
-    
-    public byte[] getEncodedContents() 
+
+    public byte[] getEncodedContents()
         throws IOException
     {
         ByteArrayOutputStream    bOut = new ByteArrayOutputStream();
         BCPGOutputStream         pOut = new BCPGOutputStream(bOut);
-    
+
         pOut.write(version);
-    
+
         pOut.write((byte)(time >> 24));
         pOut.write((byte)(time >> 16));
         pOut.write((byte)(time >> 8));
         pOut.write((byte)time);
-    
+
         if (version <= 3)
         {
             pOut.write((byte)(validDays >> 8));
             pOut.write((byte)validDays);
         }
-    
+
         pOut.write(algorithm);
-    
+
         pOut.writeObject((BCPGObject)key);
-    
+
         return bOut.toByteArray();
     }
-    
+
     public void encode(
         BCPGOutputStream    out)
         throws IOException
