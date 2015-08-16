@@ -158,6 +158,7 @@ public class BcPGPKeyConverter
                 return new ElGamalPublicKeyParameters(elK.getY(), new ElGamalParameters(elK.getP(), elK.getG()));
             case PGPPublicKey.ECDH:
             case PGPPublicKey.ECDSA:
+            case PGPPublicKey.EDDSA:
                 ECPublicBCPGKey ecPub = (ECPublicBCPGKey)publicPk.getKey();
 
                 X9ECParameters x9 = CustomNamedCurves.getByOID(ecPub.getCurveOID());
@@ -212,6 +213,7 @@ public class BcPGPKeyConverter
                 return new ElGamalPrivateKeyParameters(elPriv.getX(), new ElGamalParameters(elPub.getP(), elPub.getG()));
             case PGPPublicKey.ECDH:
             case PGPPublicKey.ECDSA:
+            case PGPPublicKey.EDDSA:
                 ECPublicBCPGKey ecPub = (ECPublicBCPGKey)pubPk.getKey();
                 ECSecretBCPGKey ecPriv = (ECSecretBCPGKey)privPk;
 

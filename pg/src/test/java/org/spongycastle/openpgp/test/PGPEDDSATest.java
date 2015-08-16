@@ -8,7 +8,6 @@ import java.security.Security;
 import java.security.spec.ECGenParameterSpec;
 import java.util.Date;
 import java.util.Iterator;
-
 import org.spongycastle.asn1.nist.NISTNamedCurves;
 import org.spongycastle.asn1.x9.X9ECParameters;
 import org.spongycastle.bcpg.HashAlgorithmTags;
@@ -22,10 +21,12 @@ import org.spongycastle.openpgp.PGPKeyPair;
 import org.spongycastle.openpgp.PGPKeyRingGenerator;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
+import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.KeyFingerPrintCalculator;
 import org.spongycastle.openpgp.operator.PGPDigestCalculator;
@@ -53,6 +54,9 @@ public class PGPEDDSATest
     public void performTest()
         throws Exception
     {
+        // importKeyTest();
+        signKey();
+
         KeyPairGenerator        keyGen = KeyPairGenerator.getInstance("EDDSA", "SC");
 
         keyGen.initialize(new ECGenParameterSpec("ed25519"));
@@ -102,6 +106,18 @@ public class PGPEDDSATest
             fail("public key ring encoding failed");
         }
 
+        for (Iterator it = pubRingEnc.getPublicKey().getSignatures(); it.hasNext();)
+        {
+            PGPSignature certification = (PGPSignature)it.next();
+
+            certification.init(new JcaPGPContentVerifierBuilderProvider().setProvider("SC"), pubRingEnc.getPublicKey());
+
+            if (!certification.verifyCertification((String)pubRingEnc.getPublicKey().getUserIDs().next(), pubRingEnc.getPublicKey()))
+            {
+                fail("self certification does not verify");
+            }
+        }
+
         PGPSecretKeyRing secRingEnc = new PGPSecretKeyRing(secRing.getEncoded(), fingerCalc);
 
         if (!Arrays.areEqual(secRing.getEncoded(), secRingEnc.getEncoded()))
@@ -129,8 +145,6 @@ public class PGPEDDSATest
         {
             fail("re-encoded signature failed to verify!");
         }
-
-        importKeyTest();
     }
 
     private void importKeyTest()
@@ -177,6 +191,56 @@ public class PGPEDDSATest
         // Read the private key
         //
         PGPSecretKeyRing        secretKeyRing = new PGPSecretKeyRing(testPrivKey, new JcaKeyFingerprintCalculator());
+    }
+
+    private void signKey()
+        throws Exception
+    {
+        char[]              passPhrase = "hello".toCharArray();
+        KeyPairGenerator    rsaKpg = KeyPairGenerator.getInstance("RSA", "SC");
+
+        rsaKpg.initialize(512);
+
+        KeyPair           rsaKp = rsaKpg.generateKeyPair();
+        PGPKeyPair        rsaKeyPair1 = new JcaPGPKeyPair(PGPPublicKey.RSA_GENERAL, rsaKp, new Date());
+        PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build().get(HashAlgorithmTags.SHA1);
+        PGPKeyRingGenerator    keyRingGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION, rsaKeyPair1,
+                            "test", sha1Calc, null, null, new JcaPGPContentSignerBuilder(PGPPublicKey.RSA_SIGN, HashAlgorithmTags.SHA1), new JcePBESecretKeyEncryptorBuilder(PGPEncryptedData.AES_256).setProvider("SC").build(passPhrase));
+
+        KeyPairGenerator        eddsaKpg = KeyPairGenerator.getInstance("EDDSA", "SC");
+        eddsaKpg.initialize(new ECGenParameterSpec("ed25519"));
+        KeyPair eddsaKp = eddsaKpg.generateKeyPair();
+        PGPKeyPair eddsaKeyPair = new JcaPGPKeyPair(PGPPublicKey.EDDSA, eddsaKp, new Date());
+
+        keyRingGen.addSubKey(eddsaKeyPair);
+
+        PGPSecretKeyRing       keyRing = keyRingGen.generateSecretKeyRing();
+
+        keyRing.getSecretKey().extractPrivateKey(new BcPBESecretKeyDecryptorBuilder(new BcPGPDigestCalculatorProvider()).build(passPhrase));
+
+        PGPPublicKeyRing        pubRing = keyRingGen.generatePublicKeyRing();
+
+        PGPPublicKey             masterPublicKey  = rsaKeyPair1.getPublicKey();
+        PGPPrivateKey            masterPrivateKey = rsaKeyPair1.getPrivateKey();
+        PGPPublicKey             subPublicKey     = eddsaKeyPair.getPublicKey();
+        PGPPrivateKey            subPrivateKey    = eddsaKeyPair.getPrivateKey();
+
+        PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
+        subHashedPacketsGen.setSignatureCreationTime(false, new Date());
+        PGPSignatureGenerator subSigGen =
+            new PGPSignatureGenerator(new JcaPGPContentSignerBuilder(PGPPublicKey.EDDSA, HashAlgorithmTags.SHA512).setProvider("SC"));
+        subSigGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
+        subSigGen.setHashedSubpackets(subHashedPacketsGen.generate());
+        PGPSignature sig = subSigGen.generateCertification(masterPublicKey, subPublicKey);
+
+        if (sig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING)
+        {
+            sig.init(new BcPGPContentVerifierBuilderProvider(), subPublicKey);
+            if (!sig.verifyCertification(masterPublicKey, subPublicKey))
+            {
+                fail("failed to verify sub-key signature.");
+            }
+        }
     }
 
     public String getName()
