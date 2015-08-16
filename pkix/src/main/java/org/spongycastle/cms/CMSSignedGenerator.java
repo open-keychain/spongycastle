@@ -32,7 +32,7 @@ public class CMSSignedGenerator
      * Default type for the signed data.
      */
     public static final String  DATA = CMSObjectIdentifiers.data.getId();
-    
+
     public static final String  DIGEST_SHA1 = OIWObjectIdentifiers.idSHA1.getId();
     public static final String  DIGEST_SHA224 = NISTObjectIdentifiers.id_sha224.getId();
     public static final String  DIGEST_SHA256 = NISTObjectIdentifiers.id_sha256.getId();
@@ -47,6 +47,7 @@ public class CMSSignedGenerator
     public static final String  ENCRYPTION_RSA = PKCSObjectIdentifiers.rsaEncryption.getId();
     public static final String  ENCRYPTION_DSA = X9ObjectIdentifiers.id_dsa_with_sha1.getId();
     public static final String  ENCRYPTION_ECDSA = X9ObjectIdentifiers.ecdsa_with_SHA1.getId();
+    public static final String  ENCRYPTION_EDDSA = X9ObjectIdentifiers.ecdsa_with_SHA1.getId();
     public static final String  ENCRYPTION_RSA_PSS = PKCSObjectIdentifiers.id_RSASSA_PSS.getId();
     public static final String  ENCRYPTION_GOST3410 = CryptoProObjectIdentifiers.gostR3410_94.getId();
     public static final String  ENCRYPTION_ECGOST3410 = CryptoProObjectIdentifiers.gostR3410_2001.getId();
@@ -56,6 +57,12 @@ public class CMSSignedGenerator
     private static final String  ENCRYPTION_ECDSA_WITH_SHA256 = X9ObjectIdentifiers.ecdsa_with_SHA256.getId();
     private static final String  ENCRYPTION_ECDSA_WITH_SHA384 = X9ObjectIdentifiers.ecdsa_with_SHA384.getId();
     private static final String  ENCRYPTION_ECDSA_WITH_SHA512 = X9ObjectIdentifiers.ecdsa_with_SHA512.getId();
+
+    private static final String  ENCRYPTION_EDDSA_WITH_SHA1 = X9ObjectIdentifiers.eddsa_with_SHA1.getId();
+    private static final String  ENCRYPTION_EDDSA_WITH_SHA224 = X9ObjectIdentifiers.eddsa_with_SHA224.getId();
+    private static final String  ENCRYPTION_EDDSA_WITH_SHA256 = X9ObjectIdentifiers.eddsa_with_SHA256.getId();
+    private static final String  ENCRYPTION_EDDSA_WITH_SHA384 = X9ObjectIdentifiers.eddsa_with_SHA384.getId();
+    private static final String  ENCRYPTION_EDDSA_WITH_SHA512 = X9ObjectIdentifiers.eddsa_with_SHA512.getId();
 
     private static final Set NO_PARAMS = new HashSet();
     private static final Map EC_ALGORITHMS = new HashMap();
@@ -69,12 +76,23 @@ public class CMSSignedGenerator
         NO_PARAMS.add(ENCRYPTION_ECDSA_WITH_SHA256);
         NO_PARAMS.add(ENCRYPTION_ECDSA_WITH_SHA384);
         NO_PARAMS.add(ENCRYPTION_ECDSA_WITH_SHA512);
+        NO_PARAMS.add(ENCRYPTION_EDDSA);
+        NO_PARAMS.add(ENCRYPTION_EDDSA_WITH_SHA1);
+        NO_PARAMS.add(ENCRYPTION_EDDSA_WITH_SHA224);
+        NO_PARAMS.add(ENCRYPTION_EDDSA_WITH_SHA256);
+        NO_PARAMS.add(ENCRYPTION_EDDSA_WITH_SHA384);
+        NO_PARAMS.add(ENCRYPTION_EDDSA_WITH_SHA512)
 
         EC_ALGORITHMS.put(DIGEST_SHA1, ENCRYPTION_ECDSA_WITH_SHA1);
         EC_ALGORITHMS.put(DIGEST_SHA224, ENCRYPTION_ECDSA_WITH_SHA224);
         EC_ALGORITHMS.put(DIGEST_SHA256, ENCRYPTION_ECDSA_WITH_SHA256);
         EC_ALGORITHMS.put(DIGEST_SHA384, ENCRYPTION_ECDSA_WITH_SHA384);
         EC_ALGORITHMS.put(DIGEST_SHA512, ENCRYPTION_ECDSA_WITH_SHA512);
+        EC_ALGORITHMS.put(DIGEST_SHA1, ENCRYPTION_EDDSA_WITH_SHA1);
+        EC_ALGORITHMS.put(DIGEST_SHA224, ENCRYPTION_EDDSA_WITH_SHA224);
+        EC_ALGORITHMS.put(DIGEST_SHA256, ENCRYPTION_EDDSA_WITH_SHA256);
+        EC_ALGORITHMS.put(DIGEST_SHA384, ENCRYPTION_EDDSA_WITH_SHA384);
+        EC_ALGORITHMS.put(DIGEST_SHA512, ENCRYPTION_EDDSA_WITH_SHA512);
     }
 
     protected List certs = new ArrayList();

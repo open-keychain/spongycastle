@@ -78,7 +78,13 @@ public class EC
             provider.addAlgorithm("Alg.Alias.Signature." + TeleTrusTObjectIdentifiers.ecSignWithSha1, "ECDSA");
 
             provider.addAlgorithm("Alg.Alias.Signature.SHA1withEDDSA", "EDDSA");
+            provider.addAlgorithm("Alg.Alias.Signature.EDDSAwithSHA1", "EDDSA");
             provider.addAlgorithm("Alg.Alias.Signature.SHA1WITHEDDSA", "EDDSA");
+            provider.addAlgorithm("Alg.Alias.Signature.EDDSAWITHSHA1", "EDDSA");
+            provider.addAlgorithm("Alg.Alias.Signature.SHA1WithEDDSA", "EDDSA");
+            provider.addAlgorithm("Alg.Alias.Signature.EDDSAWithSHA1", "EDDSA");
+            provider.addAlgorithm("Alg.Alias.Signature.1.2.840.10045.4.4", "EDDSA");
+            provider.addAlgorithm("Alg.Alias.Signature." + TeleTrusTObjectIdentifiers.edSignWithSha1, "EDDSA");
 
             provider.addAlgorithm("Signature.DETECDSA", PREFIX + "SignatureSpi$ecDetDSA");
             provider.addAlgorithm("Signature.SHA1WITHDETECDSA", PREFIX + "SignatureSpi$ecDetDSA");
@@ -86,6 +92,13 @@ public class EC
             provider.addAlgorithm("Signature.SHA256WITHDETECDSA", PREFIX + "SignatureSpi$ecDetDSA256");
             provider.addAlgorithm("Signature.SHA384WITHDETECDSA", PREFIX + "SignatureSpi$ecDetDSA384");
             provider.addAlgorithm("Signature.SHA512WITHDETECDSA", PREFIX + "SignatureSpi$ecDetDSA512");
+
+            provider.addAlgorithm("Signature.DETEDDSA", PREFIX + "SignatureSpi$edDetDSA");
+            provider.addAlgorithm("Signature.SHA1WITHDETEDDSA", PREFIX + "SignatureSpi$edDetDSA");
+            provider.addAlgorithm("Signature.SHA224WITHDETEDDSA", PREFIX + "SignatureSpi$edDetDSA224");
+            provider.addAlgorithm("Signature.SHA256WITHDETEDDSA", PREFIX + "SignatureSpi$edDetDSA256");
+            provider.addAlgorithm("Signature.SHA384WITHDETEDDSA", PREFIX + "SignatureSpi$edDetDSA384");
+            provider.addAlgorithm("Signature.SHA512WITHDETEDDSA", PREFIX + "SignatureSpi$edDetDSA512");
 
             addSignatureAlgorithm(provider, "SHA224", "ECDSA", PREFIX + "SignatureSpi$ecDSA224", X9ObjectIdentifiers.ecdsa_with_SHA224);
             addSignatureAlgorithm(provider, "SHA256", "ECDSA", PREFIX + "SignatureSpi$ecDSA256", X9ObjectIdentifiers.ecdsa_with_SHA256);

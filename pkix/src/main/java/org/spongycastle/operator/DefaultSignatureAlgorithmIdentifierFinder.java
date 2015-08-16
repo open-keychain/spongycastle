@@ -33,6 +33,7 @@ public class DefaultSignatureAlgorithmIdentifierFinder
     private static final ASN1ObjectIdentifier ENCRYPTION_RSA = PKCSObjectIdentifiers.rsaEncryption;
     private static final ASN1ObjectIdentifier ENCRYPTION_DSA = X9ObjectIdentifiers.id_dsa_with_sha1;
     private static final ASN1ObjectIdentifier ENCRYPTION_ECDSA = X9ObjectIdentifiers.ecdsa_with_SHA1;
+    private static final ASN1ObjectIdentifier ENCRYPTION_EDDSA = X9ObjectIdentifiers.eddsa_with_SHA1;
     private static final ASN1ObjectIdentifier ENCRYPTION_RSA_PSS = PKCSObjectIdentifiers.id_RSASSA_PSS;
     private static final ASN1ObjectIdentifier ENCRYPTION_GOST3410 = CryptoProObjectIdentifiers.gostR3410_94;
     private static final ASN1ObjectIdentifier ENCRYPTION_ECGOST3410 = CryptoProObjectIdentifiers.gostR3410_2001;
@@ -76,6 +77,12 @@ public class DefaultSignatureAlgorithmIdentifierFinder
         algorithms.put("SHA256WITHECDSA", X9ObjectIdentifiers.ecdsa_with_SHA256);
         algorithms.put("SHA384WITHECDSA", X9ObjectIdentifiers.ecdsa_with_SHA384);
         algorithms.put("SHA512WITHECDSA", X9ObjectIdentifiers.ecdsa_with_SHA512);
+        algorithms.put("SHA1WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA1);
+        algorithms.put("EDDSAWITHSHA1", X9ObjectIdentifiers.eddsa_with_SHA1);
+        algorithms.put("SHA224WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA224);
+        algorithms.put("SHA256WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA256);
+        algorithms.put("SHA384WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA384);
+        algorithms.put("SHA512WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA512);
         algorithms.put("GOST3411WITHGOST3410", CryptoProObjectIdentifiers.gostR3411_94_with_gostR3410_94);
         algorithms.put("GOST3411WITHGOST3410-94", CryptoProObjectIdentifiers.gostR3411_94_with_gostR3410_94);
         algorithms.put("GOST3411WITHECGOST3410", CryptoProObjectIdentifiers.gostR3411_94_with_gostR3410_2001);
@@ -87,11 +94,22 @@ public class DefaultSignatureAlgorithmIdentifierFinder
         algorithms.put("SHA384WITHPLAIN-ECDSA", BSIObjectIdentifiers.ecdsa_plain_SHA384);
         algorithms.put("SHA512WITHPLAIN-ECDSA", BSIObjectIdentifiers.ecdsa_plain_SHA512);
         algorithms.put("RIPEMD160WITHPLAIN-ECDSA", BSIObjectIdentifiers.ecdsa_plain_RIPEMD160);
-        algorithms.put("SHA1WITHCVC-ECDSA", EACObjectIdentifiers.id_TA_ECDSA_SHA_1);
-        algorithms.put("SHA224WITHPCVC-ECDSA", EACObjectIdentifiers.id_TA_ECDSA_SHA_224);
-        algorithms.put("SHA256WITHCVC-ECDSA", EACObjectIdentifiers.id_TA_ECDSA_SHA_256);
-        algorithms.put("SHA384WITHCVC-ECDSA", EACObjectIdentifiers.id_TA_ECDSA_SHA_384);
-        algorithms.put("SHA512WITHCVC-ECDSA", EACObjectIdentifiers.id_TA_ECDSA_SHA_512);
+        algorithms.put("SHA1WITHCVC-EDDSA", EACObjectIdentifiers.id_TA_EDDSA_SHA_1);
+        algorithms.put("SHA224WITHPCVC-EDDSA", EACObjectIdentifiers.id_TA_EDDSA_SHA_224);
+        algorithms.put("SHA256WITHCVC-EDDSA", EACObjectIdentifiers.id_TA_EDDSA_SHA_256);
+        algorithms.put("SHA384WITHCVC-EDDSA", EACObjectIdentifiers.id_TA_EDDSA_SHA_384);
+        algorithms.put("SHA512WITHCVC-EDDSA", EACObjectIdentifiers.id_TA_EDDSA_SHA_512);
+        algorithms.put("SHA1WITHPLAIN-EDDSA", BSIObjectIdentifiers.eddsa_plain_SHA1);
+        algorithms.put("SHA224WITHPLAIN-EDDSA", BSIObjectIdentifiers.eddsa_plain_SHA224);
+        algorithms.put("SHA256WITHPLAIN-EDDSA", BSIObjectIdentifiers.eddsa_plain_SHA256);
+        algorithms.put("SHA384WITHPLAIN-EDDSA", BSIObjectIdentifiers.eddsa_plain_SHA384);
+        algorithms.put("SHA512WITHPLAIN-EDDSA", BSIObjectIdentifiers.eddsa_plain_SHA512);
+        algorithms.put("RIPEMD160WITHPLAIN-EDDSA", BSIObjectIdentifiers.eddsa_plain_RIPEMD160);
+        algorithms.put("SHA1WITHCVC-EDDSA", EACObjectIdentifiers.id_TA_EDDSA_SHA_1);
+        algorithms.put("SHA224WITHPCVC-EDDSA", EACObjectIdentifiers.id_TA_EDDSA_SHA_224);
+        algorithms.put("SHA256WITHCVC-EDDSA", EACObjectIdentifiers.id_TA_EDDSA_SHA_256);
+        algorithms.put("SHA384WITHCVC-EDDSA", EACObjectIdentifiers.id_TA_EDDSA_SHA_384);
+        algorithms.put("SHA512WITHCVC-EDDSA", EACObjectIdentifiers.id_TA_EDDSA_SHA_512);
         //
         // According to RFC 3279, the ASN.1 encoding SHALL (id-dsa-with-sha1) or MUST (ecdsa-with-SHA*) omit the parameters field.
         // The parameters field SHALL be NULL for RSA based signature algorithms.

@@ -84,6 +84,15 @@ public class SignatureSpi
         }
     }
 
+    static public class edDetDSA
+        extends SignatureSpi
+    {
+        public edDetDSA()
+        {
+            super(new SHA1Digest(), new EDDSASigner(new HMacDSAKCalculator(new SHA1Digest())), new StdDSAEncoder());
+        }
+    }
+
     static public class ecDSAnone
         extends SignatureSpi
     {
@@ -120,6 +129,15 @@ public class SignatureSpi
         }
     }
 
+    static public class edDetDSA224
+        extends SignatureSpi
+    {
+        public edDetDSA224()
+        {
+            super(new SHA224Digest(), new EDDSASigner(new HMacDSAKCalculator(new SHA224Digest())), new StdDSAEncoder());
+        }
+    }
+
     static public class ecDSA256
         extends SignatureSpi
     {
@@ -144,6 +162,15 @@ public class SignatureSpi
         public ecDetDSA256()
         {
             super(new SHA256Digest(), new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest())), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDetDSA256
+        extends SignatureSpi
+    {
+        public edDetDSA256()
+        {
+            super(new SHA256Digest(), new EDDSASigner(new HMacDSAKCalculator(new SHA256Digest())), new StdDSAEncoder());
         }
     }
 
@@ -174,6 +201,15 @@ public class SignatureSpi
         }
     }
 
+    static public class edDetDSA384
+        extends SignatureSpi
+    {
+        public edDetDSA384()
+        {
+            super(new SHA384Digest(), new EDDSASigner(new HMacDSAKCalculator(new SHA384Digest())), new StdDSAEncoder());
+        }
+    }
+
     static public class ecDSA512
         extends SignatureSpi
     {
@@ -198,6 +234,15 @@ public class SignatureSpi
         public ecDetDSA512()
         {
             super(new SHA512Digest(), new ECDSASigner(new HMacDSAKCalculator(new SHA512Digest())), new StdDSAEncoder());
+        }
+    }
+
+    static public class edDetDSA512
+        extends SignatureSpi
+    {
+        public edDetDSA512()
+        {
+            super(new SHA512Digest(), new EDDSASigner(new HMacDSAKCalculator(new SHA512Digest())), new StdDSAEncoder());
         }
     }
 

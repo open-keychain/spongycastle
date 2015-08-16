@@ -41,9 +41,9 @@ class X509Util
     private static Hashtable algorithms = new Hashtable();
     private static Hashtable params = new Hashtable();
     private static Set       noParams = new HashSet();
-    
+
     static
-    {   
+    {
         algorithms.put("MD2WITHRSAENCRYPTION", PKCSObjectIdentifiers.md2WithRSAEncryption);
         algorithms.put("MD2WITHRSA", PKCSObjectIdentifiers.md2WithRSAEncryption);
         algorithms.put("MD5WITHRSAENCRYPTION", PKCSObjectIdentifiers.md5WithRSAEncryption);
@@ -81,6 +81,12 @@ class X509Util
         algorithms.put("SHA256WITHECDSA", X9ObjectIdentifiers.ecdsa_with_SHA256);
         algorithms.put("SHA384WITHECDSA", X9ObjectIdentifiers.ecdsa_with_SHA384);
         algorithms.put("SHA512WITHECDSA", X9ObjectIdentifiers.ecdsa_with_SHA512);
+        algorithms.put("SHA1WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA1);
+        algorithms.put("EDDSAWITHSHA1", X9ObjectIdentifiers.eddsa_with_SHA1);
+        algorithms.put("SHA224WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA224);
+        algorithms.put("SHA256WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA256);
+        algorithms.put("SHA384WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA384);
+        algorithms.put("SHA512WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA512);
         algorithms.put("GOST3411WITHGOST3410", CryptoProObjectIdentifiers.gostR3411_94_with_gostR3410_94);
         algorithms.put("GOST3411WITHGOST3410-94", CryptoProObjectIdentifiers.gostR3411_94_with_gostR3410_94);
         algorithms.put("GOST3411WITHECGOST3410", CryptoProObjectIdentifiers.gostR3411_94_with_gostR3410_2001);
@@ -88,7 +94,7 @@ class X509Util
         algorithms.put("GOST3411WITHGOST3410-2001", CryptoProObjectIdentifiers.gostR3411_94_with_gostR3410_2001);
 
         //
-        // According to RFC 3279, the ASN.1 encoding SHALL (id-dsa-with-sha1) or MUST (ecdsa-with-SHA*) omit the parameters field. 
+        // According to RFC 3279, the ASN.1 encoding SHALL (id-dsa-with-sha1) or MUST (ecdsa-with-SHA*) omit the parameters field.
         // The parameters field SHALL be NULL for RSA based signature algorithms.
         //
         noParams.add(X9ObjectIdentifiers.ecdsa_with_SHA1);
@@ -101,7 +107,7 @@ class X509Util
         noParams.add(NISTObjectIdentifiers.dsa_with_sha256);
         noParams.add(NISTObjectIdentifiers.dsa_with_sha384);
         noParams.add(NISTObjectIdentifiers.dsa_with_sha512);
-        
+
         //
         // RFC 4491
         //
@@ -140,15 +146,15 @@ class X509Util
         String algorithmName)
     {
         algorithmName = Strings.toUpperCase(algorithmName);
-        
+
         if (algorithms.containsKey(algorithmName))
         {
             return (ASN1ObjectIdentifier)algorithms.get(algorithmName);
         }
-        
+
         return new ASN1ObjectIdentifier(algorithmName);
     }
-    
+
     static AlgorithmIdentifier getSigAlgID(
         ASN1ObjectIdentifier sigOid,
         String              algorithmName)
@@ -169,17 +175,17 @@ class X509Util
             return new AlgorithmIdentifier(sigOid, DERNull.INSTANCE);
         }
     }
-    
+
     static Iterator getAlgNames()
     {
         Enumeration e = algorithms.keys();
         List        l = new ArrayList();
-        
+
         while (e.hasMoreElements())
         {
             l.add(e.nextElement());
         }
-        
+
         return l.iterator();
     }
 

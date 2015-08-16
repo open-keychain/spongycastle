@@ -46,7 +46,7 @@ import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.util.Strings;
 
 /**
- * A class for verifying and creating PKCS10 Certification requests. 
+ * A class for verifying and creating PKCS10 Certification requests.
  * <pre>
  * CertificationRequest ::= SEQUENCE {
  *   certificationRequestInfo  CertificationRequestInfo,
@@ -120,6 +120,12 @@ public class PKCS10CertificationRequest
         algorithms.put("SHA384WITHECDSA", X9ObjectIdentifiers.ecdsa_with_SHA384);
         algorithms.put("SHA512WITHECDSA", X9ObjectIdentifiers.ecdsa_with_SHA512);
         algorithms.put("ECDSAWITHSHA1", X9ObjectIdentifiers.ecdsa_with_SHA1);
+        algorithms.put("SHA1WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA1);
+        algorithms.put("SHA224WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA224);
+        algorithms.put("SHA256WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA256);
+        algorithms.put("SHA384WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA384);
+        algorithms.put("SHA512WITHEDDSA", X9ObjectIdentifiers.eddsa_with_SHA512);
+        algorithms.put("EDDSAWITHSHA1", X9ObjectIdentifiers.eddsa_with_SHA1);
         algorithms.put("GOST3411WITHGOST3410", CryptoProObjectIdentifiers.gostR3411_94_with_gostR3410_94);
         algorithms.put("GOST3410WITHGOST3411", CryptoProObjectIdentifiers.gostR3411_94_with_gostR3410_94);
         algorithms.put("GOST3411WITHECGOST3410", CryptoProObjectIdentifiers.gostR3411_94_with_gostR3410_2001);
@@ -136,7 +142,7 @@ public class PKCS10CertificationRequest
         oids.put(PKCSObjectIdentifiers.sha512WithRSAEncryption, "SHA512WITHRSA");
         oids.put(CryptoProObjectIdentifiers.gostR3411_94_with_gostR3410_94, "GOST3411WITHGOST3410");
         oids.put(CryptoProObjectIdentifiers.gostR3411_94_with_gostR3410_2001, "GOST3411WITHECGOST3410");
-        
+
         oids.put(new ASN1ObjectIdentifier("1.2.840.113549.1.1.4"), "MD5WITHRSA");
         oids.put(new ASN1ObjectIdentifier("1.2.840.113549.1.1.2"), "MD2WITHRSA");
         oids.put(new ASN1ObjectIdentifier("1.2.840.10040.4.3"), "SHA1WITHDSA");
@@ -145,19 +151,24 @@ public class PKCS10CertificationRequest
         oids.put(X9ObjectIdentifiers.ecdsa_with_SHA256, "SHA256WITHECDSA");
         oids.put(X9ObjectIdentifiers.ecdsa_with_SHA384, "SHA384WITHECDSA");
         oids.put(X9ObjectIdentifiers.ecdsa_with_SHA512, "SHA512WITHECDSA");
+        oids.put(X9ObjectIdentifiers.eddsa_with_SHA1, "SHA1WITHEDDSA");
+        oids.put(X9ObjectIdentifiers.eddsa_with_SHA224, "SHA224WITHEDDSA");
+        oids.put(X9ObjectIdentifiers.eddsa_with_SHA256, "SHA256WITHEDDSA");
+        oids.put(X9ObjectIdentifiers.eddsa_with_SHA384, "SHA384WITHEDDSA");
+        oids.put(X9ObjectIdentifiers.eddsa_with_SHA512, "SHA512WITHEDDSA");
         oids.put(OIWObjectIdentifiers.sha1WithRSA, "SHA1WITHRSA");
         oids.put(OIWObjectIdentifiers.dsaWithSHA1, "SHA1WITHDSA");
         oids.put(NISTObjectIdentifiers.dsa_with_sha224, "SHA224WITHDSA");
         oids.put(NISTObjectIdentifiers.dsa_with_sha256, "SHA256WITHDSA");
-        
+
         //
         // key types
         //
         keyAlgorithms.put(PKCSObjectIdentifiers.rsaEncryption, "RSA");
         keyAlgorithms.put(X9ObjectIdentifiers.id_dsa, "DSA");
-        
+
         //
-        // According to RFC 3279, the ASN.1 encoding SHALL (id-dsa-with-sha1) or MUST (ecdsa-with-SHA*) omit the parameters field. 
+        // According to RFC 3279, the ASN.1 encoding SHALL (id-dsa-with-sha1) or MUST (ecdsa-with-SHA*) omit the parameters field.
         // The parameters field SHALL be NULL for RSA based signature algorithms.
         //
         noParams.add(X9ObjectIdentifiers.ecdsa_with_SHA1);
@@ -260,7 +271,7 @@ public class PKCS10CertificationRequest
             throw new IllegalArgumentException("can't convert name");
         }
     }
-    
+
     /**
      * create a PKCS10 certfication request using the BC provider.
      */
@@ -275,7 +286,7 @@ public class PKCS10CertificationRequest
     {
         this(signatureAlgorithm, convertName(subject), key, attributes, signingKey, BouncyCastleProvider.PROVIDER_NAME);
     }
-    
+
     /**
      * create a PKCS10 certfication request using the named provider.
      */
@@ -291,7 +302,7 @@ public class PKCS10CertificationRequest
     {
         this(signatureAlgorithm, convertName(subject), key, attributes, signingKey, provider);
     }
-    
+
     /**
      * create a PKCS10 certfication request using the named provider.
      */
@@ -394,7 +405,7 @@ public class PKCS10CertificationRequest
     {
         SubjectPublicKeyInfo    subjectPKInfo = reqInfo.getSubjectPublicKeyInfo();
 
-        
+
         try
         {
             X509EncodedKeySpec      xspec = new X509EncodedKeySpec(new DERBitString(subjectPKInfo).getBytes());
@@ -418,7 +429,7 @@ public class PKCS10CertificationRequest
                 if (keyAlgorithms.get(keyAlg.getObjectId()) != null)
                 {
                     String  keyAlgorithm = (String)keyAlgorithms.get(keyAlg.getObjectId());
-                    
+
                     if (provider == null)
                     {
                         return KeyFactory.getInstance(keyAlgorithm).generatePublic(xspec);
@@ -428,7 +439,7 @@ public class PKCS10CertificationRequest
                         return KeyFactory.getInstance(keyAlgorithm, provider).generatePublic(xspec);
                     }
                 }
-                
+
                 throw e;
             }
         }
@@ -510,7 +521,7 @@ public class PKCS10CertificationRequest
         }
 
         setSignatureParameters(sig, sigAlgId.getParameters());
-        
+
         sig.initVerify(pubKey);
 
         try
@@ -634,7 +645,7 @@ public class PKCS10CertificationRequest
         }
         else
         {
-            return digestAlgOID.getId();            
+            return digestAlgOID.getId();
         }
     }
 }

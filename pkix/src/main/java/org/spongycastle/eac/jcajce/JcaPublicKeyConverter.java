@@ -45,7 +45,8 @@ public class JcaPublicKeyConverter
     public PublicKey getKey(PublicKeyDataObject publicKeyDataObject)
         throws EACException, InvalidKeySpecException
     {
-        if (publicKeyDataObject.getUsage().on(EACObjectIdentifiers.id_TA_ECDSA))
+        if (publicKeyDataObject.getUsage().on(EACObjectIdentifiers.id_TA_ECDSA)
+            || publicKeyDataObject.getUsage().on(EACObjectIdentifiers.id_TA_EDDSA))
         {
             return getECPublicKeyPublicKey((ECDSAPublicKey)publicKeyDataObject);
         }

@@ -72,6 +72,17 @@ class OperatorHelper
         oids.put(EACObjectIdentifiers.id_TA_ECDSA_SHA_256, "SHA256WITHCVC-ECDSA");
         oids.put(EACObjectIdentifiers.id_TA_ECDSA_SHA_384, "SHA384WITHCVC-ECDSA");
         oids.put(EACObjectIdentifiers.id_TA_ECDSA_SHA_512, "SHA512WITHCVC-ECDSA");
+        oids.put(BSIObjectIdentifiers.eddsa_plain_SHA1, "SHA1WITHPLAIN-EDDSA");
+        oids.put(BSIObjectIdentifiers.eddsa_plain_SHA224, "SHA224WITHPLAIN-EDDSA");
+        oids.put(BSIObjectIdentifiers.eddsa_plain_SHA256, "SHA256WITHPLAIN-EDDSA");
+        oids.put(BSIObjectIdentifiers.eddsa_plain_SHA384, "SHA384WITHPLAIN-EDDSA");
+        oids.put(BSIObjectIdentifiers.eddsa_plain_SHA512, "SHA512WITHPLAIN-EDDSA");
+        oids.put(BSIObjectIdentifiers.eddsa_plain_RIPEMD160, "RIPEMD160WITHPLAIN-EDDSA");
+        oids.put(EACObjectIdentifiers.id_TA_EDDSA_SHA_1, "SHA1WITHCVC-EDDSA");
+        oids.put(EACObjectIdentifiers.id_TA_EDDSA_SHA_224, "SHA224WITHCVC-EDDSA");
+        oids.put(EACObjectIdentifiers.id_TA_EDDSA_SHA_256, "SHA256WITHCVC-EDDSA");
+        oids.put(EACObjectIdentifiers.id_TA_EDDSA_SHA_384, "SHA384WITHCVC-EDDSA");
+        oids.put(EACObjectIdentifiers.id_TA_EDDSA_SHA_512, "SHA512WITHCVC-EDDSA");
 
         oids.put(new ASN1ObjectIdentifier("1.2.840.113549.1.1.4"), "MD5WITHRSA");
         oids.put(new ASN1ObjectIdentifier("1.2.840.113549.1.1.2"), "MD2WITHRSA");

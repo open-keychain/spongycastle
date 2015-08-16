@@ -11,10 +11,10 @@ public interface BSIObjectIdentifiers
 
     /* 0.4.0.127.0.7.1.1 */
     static final ASN1ObjectIdentifier id_ecc = bsi_de.branch("1.1");
-    
+
     /* 0.4.0.127.0.7.1.1.4.1 */
     static final ASN1ObjectIdentifier ecdsa_plain_signatures = id_ecc.branch("4.1");
-    
+
     /* 0.4.0.127.0.7.1.1.4.1.1 */
     static final ASN1ObjectIdentifier ecdsa_plain_SHA1 = ecdsa_plain_signatures.branch("1");
 
@@ -32,4 +32,25 @@ public interface BSIObjectIdentifiers
 
     /* 0.4.0.127.0.7.1.1.4.1.6 */
     static final ASN1ObjectIdentifier ecdsa_plain_RIPEMD160 = ecdsa_plain_signatures.branch("6");
+
+    /* 0.4.0.127.0.7.1.1.4.2 */
+    static final ASN1ObjectIdentifier eddsa_plain_signatures = id_ecc.branch("4.2");
+
+    /* 0.4.0.127.0.7.1.1.4.2.1 */
+    static final ASN1ObjectIdentifier eddsa_plain_SHA1 = eddsa_plain_signatures.branch("1");
+
+    /* 0.4.0.127.0.7.1.1.4.2.2 */
+    static final ASN1ObjectIdentifier eddsa_plain_SHA224 = eddsa_plain_signatures.branch("2");
+
+    /* 0.4.0.127.0.7.1.1.4.2.3 */
+    static final ASN1ObjectIdentifier eddsa_plain_SHA256 = eddsa_plain_signatures.branch("3");
+
+    /* 0.4.0.127.0.7.1.1.4.2.4 */
+    static final ASN1ObjectIdentifier eddsa_plain_SHA384 = eddsa_plain_signatures.branch("4");
+
+    /* 0.4.0.127.0.7.1.1.4.2.5 */
+    static final ASN1ObjectIdentifier eddsa_plain_SHA512 = eddsa_plain_signatures.branch("5");
+
+    /* 0.4.0.127.0.7.1.1.4.2.6 */
+    static final ASN1ObjectIdentifier eddsa_plain_RIPEMD160 = eddsa_plain_signatures.branch("6");
 }

@@ -37,6 +37,9 @@ public interface TeleTrusTObjectIdentifiers
     /** 1.3.36.3.3.2.2 */
     static final ASN1ObjectIdentifier    ecSignWithRipemd160  = ecSign.branch("2");
 
+    /** 1.3.36.3.3.2,3 */
+    static final ASN1ObjectIdentifier    edSignWithSha1       = ecSign.branch("3");
+
     /** 1.3.36.3.3.2.8 */
     static final ASN1ObjectIdentifier ecc_brainpool = teleTrusTAlgorithm.branch("3.2.8");
     /** 1.3.36.3.3.2.8.1 */

@@ -67,6 +67,12 @@ public class DefaultCMSSignatureAlgorithmNameGenerator
         addEntries(BSIObjectIdentifiers.ecdsa_plain_SHA384, "SHA384", "PLAIN-ECDSA");
         addEntries(BSIObjectIdentifiers.ecdsa_plain_SHA512, "SHA512", "PLAIN-ECDSA");
         addEntries(BSIObjectIdentifiers.ecdsa_plain_RIPEMD160, "RIPEMD160", "PLAIN-ECDSA");
+        addEntries(BSIObjectIdentifiers.eddsa_plain_SHA1, "SHA1", "PLAIN-EDDSA");
+        addEntries(BSIObjectIdentifiers.eddsa_plain_SHA224, "SHA224", "PLAIN-EDDSA");
+        addEntries(BSIObjectIdentifiers.eddsa_plain_SHA256, "SHA256", "PLAIN-EDDSA");
+        addEntries(BSIObjectIdentifiers.eddsa_plain_SHA384, "SHA384", "PLAIN-EDDSA");
+        addEntries(BSIObjectIdentifiers.eddsa_plain_SHA512, "SHA512", "PLAIN-EDDSA");
+        addEntries(BSIObjectIdentifiers.eddsa_plain_RIPEMD160, "RIPEMD160", "PLAIN-EDDSA");
 
         encryptionAlgs.put(X9ObjectIdentifiers.id_dsa, "DSA");
         encryptionAlgs.put(PKCSObjectIdentifiers.rsaEncryption, "RSA");
