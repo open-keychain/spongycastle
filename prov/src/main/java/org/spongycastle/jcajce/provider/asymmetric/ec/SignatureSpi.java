@@ -309,15 +309,6 @@ public class SignatureSpi
         }
     }
 
-    static public class edDSA256
-        extends SignatureSpi
-    {
-        public edDSA256()
-        {
-            super(new SHA256Digest(), new EDDSASigner(), new StdDSAEncoder());
-        }
-    }
-
     static public class edDSA
         extends SignatureSpi
     {
