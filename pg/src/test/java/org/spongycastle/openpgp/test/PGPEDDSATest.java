@@ -129,6 +129,54 @@ public class PGPEDDSATest
         {
             fail("re-encoded signature failed to verify!");
         }
+
+        importKeyTest();
+    }
+
+    private void importKeyTest()
+        throws Exception
+    {
+        byte[] testPubKey =
+            Base64.decode(
+                "mDMEU/NfCxYJKwYBBAHaRw8BAQdAPwmJlL3ZFu1AUxl5NOSofIBzOhKA1i+AEJku" +
+                "Q+47JAa0NEVkRFNBIHNhbXBsZSBrZXkgMSAoZHJhZnQta29jaC1lZGRzYS1mb3It" +
+                "b3BlbnBncC0wMCmIeQQTFggAIQUCU/NfCwIbAwULCQgHAgYVCAkKCwIEFgIDAQIe" +
+                "AQIXgAAKCRCM/eEhl5ZamnNOAP9pKn5wz3jPsgy9p65zxz1+xJEr/cczFQx/tYkk" +
+                "49tkeAD+P9jJE4SFD2lVofxn1e22H7YLvcVyHDOA9gpYWTNXiAU=");
+
+        byte[] testPrivKey =
+            Base64.decode(
+                "lIYEU/NfCxYJKwYBBAHaRw8BAQdAPwmJlL3ZFu1AUxl5NOSofIBzOhKA1i+AEJku" +
+                "Q+47JAb+BwMCeZTNZ5R2udDknlhWE5VnJaHe+HFieLlfQA+nibymcJS5lTYL7NP+" +
+                "3CY63ylHwHoS7PuPLpdbEvROJ60u6+a/bSe86jRcJODR6rN2iG9v5LQ0RWREU0Eg" +
+                "c2FtcGxlIGtleSAxIChkcmFmdC1rb2NoLWVkZHNhLWZvci1vcGVucGdwLTAwKYh5" +
+                "BBMWCAAhBQJT818LAhsDBQsJCAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEIz94SGX" +
+                "llqac04A/2kqfnDPeM+yDL2nrnPHPX7EkSv9xzMVDH+1iSTj22R4AP4/2MkThIUP" +
+                "aVWh/GfV7bYftgu9xXIcM4D2ClhZM1eIBQ==");
+
+        PGPUtil.setDefaultProvider("SC");
+
+        //
+        // Read the public key
+        //
+        PGPPublicKeyRing        pubKeyRing = new PGPPublicKeyRing(testPubKey, new JcaKeyFingerprintCalculator());
+
+        for (Iterator it = pubKeyRing.getPublicKey().getSignatures(); it.hasNext();)
+        {
+            PGPSignature certification = (PGPSignature)it.next();
+
+            certification.init(new JcaPGPContentVerifierBuilderProvider().setProvider("SC"), pubKeyRing.getPublicKey());
+
+            if (!certification.verifyCertification((String)pubKeyRing.getPublicKey().getUserIDs().next(), pubKeyRing.getPublicKey()))
+            {
+                fail("self certification does not verify");
+            }
+        }
+
+        //
+        // Read the private key
+        //
+        PGPSecretKeyRing        secretKeyRing = new PGPSecretKeyRing(testPrivKey, new JcaKeyFingerprintCalculator());
     }
 
     public String getName()

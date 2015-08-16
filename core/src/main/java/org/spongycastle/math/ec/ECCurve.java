@@ -178,7 +178,7 @@ public abstract class ECCurve
      * Adds <code>PreCompInfo</code> for a point on this curve, under a given name. Used by
      * <code>ECMultiplier</code>s to save the precomputation for this <code>ECPoint</code> for use
      * by subsequent multiplication.
-     * 
+     *
      * @param point
      *            The <code>ECPoint</code> to store precomputations for.
      * @param name
@@ -222,7 +222,7 @@ public abstract class ECCurve
      * coordinates reflect those of the equivalent point in an affine coordinate system. Where more
      * than one point is to be normalized, this method will generally be more efficient than
      * normalizing each point separately.
-     * 
+     *
      * @param points
      *            An array of points that will be updated in place with their normalized versions,
      *            where necessary
@@ -306,7 +306,7 @@ public abstract class ECCurve
     }
 
     /**
-     * Sets the default <code>ECMultiplier</code>, unless already set. 
+     * Sets the default <code>ECMultiplier</code>, unless already set.
      */
     public synchronized ECMultiplier getMultiplier()
     {
@@ -392,6 +392,15 @@ public abstract class ECCurve
             p = validatePoint(X, Y);
             break;
         }
+        case 0x40:
+        {
+            BigInteger Y = BigIntegers.fromUnsignedByteArray(encoded, 1, expectedLength);
+            BigInteger X = new BigInteger("0");
+
+            p = validatePoint(X, Y);
+            break;
+        }
+
         default:
             throw new IllegalArgumentException("Invalid point encoding 0x" + Integer.toString(type, 16));
         }
@@ -438,12 +447,12 @@ public abstract class ECCurve
                 && getB().toBigInteger().equals(other.getB().toBigInteger()));
     }
 
-    public boolean equals(Object obj) 
+    public boolean equals(Object obj)
     {
         return this == obj || (obj instanceof ECCurve && equals((ECCurve)obj));
     }
 
-    public int hashCode() 
+    public int hashCode()
     {
         return getField().hashCode()
             ^ Integers.rotateLeft(getA().toBigInteger().hashCode(), 8)
@@ -679,7 +688,7 @@ public abstract class ECCurve
          * represents the reduction polynomial <code>f(z)</code>.<br>
          */
         private int k3;  // can't be final - JDK 1.1
-        
+
          /**
          * The point at infinity on this curve.
          */
@@ -739,9 +748,9 @@ public abstract class ECCurve
          * <code>#E<sub>a</sub>(F<sub>2<sup>m</sup></sub>) = h * n</code>.
          */
         public F2m(
-            int m, 
-            int k, 
-            BigInteger a, 
+            int m,
+            int k,
+            BigInteger a,
             BigInteger b,
             BigInteger order,
             BigInteger cofactor)
@@ -804,11 +813,11 @@ public abstract class ECCurve
          * <code>#E<sub>a</sub>(F<sub>2<sup>m</sup></sub>) = h * n</code>.
          */
         public F2m(
-            int m, 
-            int k1, 
-            int k2, 
+            int m,
+            int k1,
+            int k2,
             int k3,
-            BigInteger a, 
+            BigInteger a,
             BigInteger b,
             BigInteger order,
             BigInteger cofactor)
@@ -970,7 +979,7 @@ public abstract class ECCurve
 
         /**
          * Decompresses a compressed point P = (xp, yp) (X9.62 s 4.2.2).
-         * 
+         *
          * @param yTilde
          *            ~yp, an indication bit for the decompression of yp.
          * @param X1
@@ -1023,7 +1032,7 @@ public abstract class ECCurve
         /**
          * Solves a quadratic equation <code>z<sup>2</sup> + z = beta</code>(X9.62
          * D.1.6) The other solution is <code>z + 1</code>.
-         * 
+         *
          * @param beta
          *            The value to solve the quadratic equation for.
          * @return the solution for <code>z<sup>2</sup> + z = beta</code> or
@@ -1071,14 +1080,14 @@ public abstract class ECCurve
 
         /**
          * Return true if curve uses a Trinomial basis.
-         * 
+         *
          * @return true if curve Trinomial, false otherwise.
          */
         public boolean isTrinomial()
         {
             return k2 == 0 && k3 == 0;
         }
-        
+
         public int getK1()
         {
             return k1;
