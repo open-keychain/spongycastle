@@ -1,9 +1,0 @@
-apply plugin: 'java'
-
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-}
-
-sourceCompatibility = 1.5
-targetCompatibility = 1.5
-version = '1.51.0.0'
