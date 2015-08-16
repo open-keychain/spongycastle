@@ -97,6 +97,18 @@ public interface EACObjectIdentifiers
     static final ASN1ObjectIdentifier    id_TA_ECDSA_SHA_384    = id_TA_ECDSA.branch("4");
     /** OID: 0.4.0.127.0.7.2.2.2.2.5 */
     static final ASN1ObjectIdentifier    id_TA_ECDSA_SHA_512    = id_TA_ECDSA.branch("5");
+    /** OID: 0.4.0.127.0.7.2.2.2.3 */
+    static final ASN1ObjectIdentifier    id_TA_EDDSA            = id_TA.branch("3");
+    /** OID: 0.4.0.127.0.7.2.2.2.3.1 */
+    static final ASN1ObjectIdentifier    id_TA_EDDSA_SHA_1      = id_TA_EDDSA.branch("1");
+    /** OID: 0.4.0.127.0.7.2.2.2.3.2 */
+    static final ASN1ObjectIdentifier    id_TA_EDDSA_SHA_224    = id_TA_EDDSA.branch("2");
+    /** OID: 0.4.0.127.0.7.2.2.2.3.3 */
+    static final ASN1ObjectIdentifier    id_TA_EDDSA_SHA_256    = id_TA_EDDSA.branch("3");
+    /** OID: 0.4.0.127.0.7.2.2.2.3.4 */
+    static final ASN1ObjectIdentifier    id_TA_EDDSA_SHA_384    = id_TA_EDDSA.branch("4");
+    /** OID: 0.4.0.127.0.7.2.2.2.3.5 */
+    static final ASN1ObjectIdentifier    id_TA_EDDSA_SHA_512    = id_TA_EDDSA.branch("5");
 
     /**
      * <pre>
