@@ -14,11 +14,13 @@ import org.spongycastle.crypto.params.ECKeyParameters;
 import org.spongycastle.crypto.params.ECPrivateKeyParameters;
 import org.spongycastle.crypto.params.ECPublicKeyParameters;
 import org.spongycastle.crypto.params.ParametersWithRandom;
+import org.spongycastle.math.ec.custom.djb.*;
 import org.spongycastle.math.ec.ECAlgorithms;
 import org.spongycastle.math.ec.ECConstants;
 import org.spongycastle.math.ec.ECMultiplier;
 import org.spongycastle.math.ec.ECPoint;
-import org.spongycastle.math.ec.FixedPointCombMultiplier;
+import org.spongycastle.math.ec.ReferenceMultiplier;
+import org.spongycastle.math.raw.Nat256;
 
 public class EDDSASigner
     implements ECConstants, DSA
@@ -148,14 +150,18 @@ public class EDDSASigner
         return h[i/8] >> (i%8) & 1;
     }
 
-    public static byte[] publickey(byte[] sk) {
+    public byte[] publickey(byte[] sk) {
         byte[] h = H(sk);
         BigInteger a = BigInteger.valueOf(2).pow(b-2);
         for (int i=3;i<(b-2);i++) {
             BigInteger apart = BigInteger.valueOf(2).pow(i).multiply(BigInteger.valueOf(bit(h,i)));
             a = a.add(apart);
         }
-        BigInteger[] A = scalarmult(B,a);
+        ECMultiplier basePointMultiplier = createBasePointMultiplier();
+        ECDomainParameters ec = key.getParameters();
+        ECPoint pe = ec.getCurve().createPoint(Bx, By, true);
+        ECPoint p = basePointMultiplier.multiply(pe, a);
+        BigInteger[] A = new BigInteger[]{p.getXCoord().toBigInteger(), p.getYCoord().toBigInteger()};
         return A[1].toByteArray();
     }
 
@@ -242,7 +248,11 @@ public class EDDSASigner
         rsub.put(h, b/8, b/4-b/8).put(m);
         BigInteger r = Hint(rsub.array());
         r = r.mod(l);
-        BigInteger[] R = scalarmult(B,r);
+        ECMultiplier basePointMultiplier = createBasePointMultiplier();
+        ECDomainParameters ec = key.getParameters();
+        ECPoint pe = ec.getCurve().createPoint(Bx, By, true);
+        ECPoint p = basePointMultiplier.multiply(pe, r);
+        BigInteger[] R = new BigInteger[]{p.getXCoord().toBigInteger(), p.getYCoord().toBigInteger()};
         ByteBuffer Stemp = ByteBuffer.allocate(b/4+pk.length+m.length);
         Stemp.put(encodepoint(R)).put(pk).put(m);
         BigInteger S = r.add(Hint(Stemp.array()).multiply(a)).mod(l);
@@ -271,12 +281,25 @@ public class EDDSASigner
         Stemp.put(encodepoint(R)).put(pk).put(m);
         BigInteger h = Hint(Stemp.array());
         h = h.mod(l);
-        BigInteger[] ra = scalarmult(B,S);
-        BigInteger[] rb = edwards(R,scalarmult(A,h));
+        ECDomainParameters ec = key.getParameters();
+        ECPoint pe = ec.getCurve().createPoint(Bx, By, true);
+        ECMultiplier basePointMultiplier = createBasePointMultiplier();
+        ECPoint p = basePointMultiplier.multiply(pe, S);
+        BigInteger[] ra = new BigInteger[]{p.getXCoord().toBigInteger(), p.getYCoord().toBigInteger()};
+        ECPoint pe1 = ec.getCurve().createPoint(A[0], A[1], true);
+        ECPoint p1 = basePointMultiplier.multiply(pe1, h);
+        BigInteger[] As = new BigInteger[]{p1.getXCoord().toBigInteger(), p1.getYCoord().toBigInteger()};
+        BigInteger[] rb = edwards(R,As);
         if (!ra[0].equals(rb[0]) || !ra[1].equals(rb[1])) // Constant time comparison
             return false;
         return true;
     }
+
+    protected ECMultiplier createBasePointMultiplier()
+    {
+        return new ReferenceMultiplier();
+    }
+
 
     protected SecureRandom initSecureRandom(boolean needed, SecureRandom provided)
     {

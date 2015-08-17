@@ -74,7 +74,7 @@ public class Ed25519Point extends ECPoint.AbstractFp
         int[] t3 = Nat256.create();
         int[] one = Nat256.fromBigInteger(BigInteger.ONE);
 
-        int[] dtemp = Ed25519Field.d;
+        int[] dtemp = Ed25519Field.d.clone();
         Ed25519Field.multiply(dtemp, X1.x, dtemp);
         Ed25519Field.multiply(dtemp, X2.x, dtemp);
         Ed25519Field.multiply(dtemp, Y1.x, dtemp);

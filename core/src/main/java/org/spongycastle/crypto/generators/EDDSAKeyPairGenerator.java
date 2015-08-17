@@ -13,11 +13,14 @@ import org.spongycastle.crypto.params.ECKeyGenerationParameters;
 import org.spongycastle.crypto.params.ECPrivateKeyParameters;
 import org.spongycastle.crypto.params.ECPublicKeyParameters;
 import org.spongycastle.crypto.signers.EDDSASigner;
+import org.spongycastle.math.ec.custom.djb.*;
 import org.spongycastle.math.ec.ECConstants;
 import org.spongycastle.math.ec.ECMultiplier;
 import org.spongycastle.math.ec.ECPoint;
 import org.spongycastle.math.ec.FixedPointCombMultiplier;
+import org.spongycastle.math.ec.ReferenceMultiplier;
 import org.spongycastle.math.ec.WNafUtil;
+import org.spongycastle.math.raw.Nat256;
 
 public class EDDSAKeyPairGenerator
     implements AsymmetricCipherKeyPairGenerator, ECConstants
@@ -87,12 +90,20 @@ public class EDDSAKeyPairGenerator
             BigInteger apart = BigInteger.valueOf(2).pow(i).multiply(BigInteger.valueOf(EDDSASigner.bit(h,i)));
             a = a.add(apart);
         }
-        BigInteger[] A = EDDSASigner.scalarmult(B,a);
+        ECPoint pe = params.getCurve().createPoint(Bx, By, true);
+        ECMultiplier basePointMultiplier = createBasePointMultiplier();
+        ECPoint p = basePointMultiplier.multiply(pe, a);
+        BigInteger[] A = new BigInteger[]{p.getXCoord().toBigInteger(), p.getYCoord().toBigInteger()};
 
         ECPoint Q = params.getCurve().createPoint(A[0], A[1]);
 
         return new AsymmetricCipherKeyPair(
             new ECPublicKeyParameters(Q, params),
             new ECPrivateKeyParameters(d, params));
+    }
+
+    protected ECMultiplier createBasePointMultiplier()
+    {
+        return new ReferenceMultiplier();
     }
 }
