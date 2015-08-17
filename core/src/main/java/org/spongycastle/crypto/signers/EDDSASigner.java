@@ -219,15 +219,18 @@ public class EDDSASigner
         byte[] xbyte = x.toByteArray();
         BigInteger y = P[1];
         byte[] ybyte = y.toByteArray();
-        ByteBuffer Rsub = ByteBuffer.allocate(xbyte.length + ybyte.length);
+        ByteBuffer Rsub = ByteBuffer.allocate(1 + xbyte.length + ybyte.length);
+        Rsub.put((byte)0x04);
         Rsub.put(xbyte);
         Rsub.put(ybyte);
         return Rsub.array();
     }
 
     static BigInteger[] decodepoint(byte[] s) throws Exception {
-        byte[] xbyte = Arrays.copyOf(s, s.length / 2);
-        byte[] ybyte = Arrays.copyOfRange(s, s.length / 2, s.length);
+        if (s[0] != 0x04)
+            throw new Exception("compressed key is not supported now.");
+        byte[] xbyte = Arrays.copyOfRange(s, 1, 1 + s.length / 2);
+        byte[] ybyte = Arrays.copyOfRange(s, 1 + s.length / 2, s.length);
         BigInteger x = new BigInteger(xbyte);
         BigInteger y = new BigInteger(ybyte);
         BigInteger[] P = {x,y};
@@ -254,7 +257,7 @@ public class EDDSASigner
         ECPoint p = basePointMultiplier.multiply(pe, r);
         BigInteger[] R = new BigInteger[]{p.getXCoord().toBigInteger(), p.getYCoord().toBigInteger()};
         ByteBuffer Stemp = ByteBuffer.allocate(b/4+pk.length+m.length);
-        Stemp.put(encodepoint(R)).put(pk).put(m);
+        Stemp.put(R[0].toByteArray()).put(R[1].toByteArray()).put(pk).put(m);
         BigInteger S = r.add(Hint(Stemp.array()).multiply(a)).mod(l);
         return new BigInteger[]{ new BigInteger(encodepoint(R)), S};
     }
@@ -278,7 +281,7 @@ public class EDDSASigner
         }
         A = new BigInteger[]{Q.getX().toBigInteger(), Q.getY().toBigInteger()};
         ByteBuffer Stemp = ByteBuffer.allocate(b/4+pk.length+m.length);
-        Stemp.put(encodepoint(R)).put(pk).put(m);
+        Stemp.put(R[0].toByteArray()).put(R[1].toByteArray()).put(pk).put(m);
         BigInteger h = Hint(Stemp.array());
         h = h.mod(l);
         ECDomainParameters ec = key.getParameters();
