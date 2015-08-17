@@ -10,7 +10,7 @@ public class Ed25519Field
     private static final long M = 0xFFFFFFFFL;
 
     // 2^255 - 2^4 - 2^1 - 1
-    static final int[] P = new int[]{ 0xFFFFFFED, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+    public static final int[] P = new int[]{ 0xFFFFFFED, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
         0xFFFFFFFF, 0x7FFFFFFF };
     // -121665 / 121666 mod P
     static final int[] d = Nat256.fromBigInteger(new

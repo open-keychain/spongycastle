@@ -273,7 +273,7 @@ public class CustomNamedCurves
 
     static
     {
-        defineCurveWithOID("curve25519", new ASN1ObjectIdentifier("1.3.132.0.40"), curve25519);
+        // defineCurveWithOID("curve25519", new ASN1ObjectIdentifier("1.3.132.0.40"), curve25519);
         defineCurveWithOID("ed25519", new ASN1ObjectIdentifier("1.3.6.1.4.1.11591.15.1"), ed25519);
 
         defineCurveWithOID("secp192k1", SECObjectIdentifiers.secp192k1, secp192k1);

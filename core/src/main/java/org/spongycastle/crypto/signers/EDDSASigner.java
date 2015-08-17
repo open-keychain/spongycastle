@@ -186,23 +186,44 @@ public class EDDSASigner
         return out;
     }
 
+    // public static byte[] encodepoint(BigInteger[] P) {
+    //     BigInteger x = P[0];
+    //     BigInteger y = P[1];
+    //     byte[] out = encodeint(y);
+    //     out[0] |= (x.testBit(0) ? 0x80 : 0);
+    //     return out;
+    // }
+
+    // static BigInteger[] decodepoint(byte[] s) throws Exception {
+    //     byte[] ybyte = Arrays.copyOf(s, s.length);
+    //     ybyte[0] &= 0x7F;
+    //     BigInteger y = new BigInteger(ybyte);
+    //     BigInteger x = xrecover(y);
+    //     if ((x.testBit(0)?1:0) != (s[0]&0x80) )
+    //     {
+    //         x = q.subtract(x);
+    //     }
+    //     BigInteger[] P = {x,y};
+    //     if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
+    //     return P;
+    // }
+
     public static byte[] encodepoint(BigInteger[] P) {
         BigInteger x = P[0];
+        byte[] xbyte = x.toByteArray();
         BigInteger y = P[1];
-        byte[] out = encodeint(y);
-        out[0] |= (x.testBit(0) ? 0x80 : 0);
-        return out;
+        byte[] ybyte = y.toByteArray();
+        ByteBuffer Rsub = ByteBuffer.allocate(xbyte.length + ybyte.length);
+        Rsub.put(xbyte);
+        Rsub.put(ybyte);
+        return Rsub.array();
     }
 
     static BigInteger[] decodepoint(byte[] s) throws Exception {
-        byte[] ybyte = Arrays.copyOf(s, s.length);
-        ybyte[0] &= 0x7F;
+        byte[] xbyte = Arrays.copyOf(s, s.length / 2);
+        byte[] ybyte = Arrays.copyOfRange(s, s.length / 2, s.length);
+        BigInteger x = new BigInteger(xbyte);
         BigInteger y = new BigInteger(ybyte);
-        BigInteger x = xrecover(y);
-        if ((x.testBit(0)?1:0) != (s[0]&0x80) )
-        {
-            x = q.subtract(x);
-        }
         BigInteger[] P = {x,y};
         if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
         return P;
@@ -211,11 +232,6 @@ public class EDDSASigner
     public BigInteger[] generateSignature(byte[] m) {
         BigInteger d = ((ECPrivateKeyParameters)key).getD();
         byte[] sk = d.toByteArray();
-        if (sk[0] == 0) {
-            byte[] tmp = new byte[sk.length - 1];
-            System.arraycopy(sk, 1, tmp, 0, tmp.length);
-            sk = tmp;
-        }
         byte[] pk = publickey(sk);
         byte[] h = H(sk);
         BigInteger a = BigInteger.valueOf(2).pow(b-2);
@@ -225,6 +241,7 @@ public class EDDSASigner
         ByteBuffer rsub = ByteBuffer.allocate((b/8)+m.length);
         rsub.put(h, b/8, b/4-b/8).put(m);
         BigInteger r = Hint(rsub.array());
+        r = r.mod(l);
         BigInteger[] R = scalarmult(B,r);
         ByteBuffer Stemp = ByteBuffer.allocate(b/4+pk.length+m.length);
         Stemp.put(encodepoint(R)).put(pk).put(m);
@@ -253,6 +270,7 @@ public class EDDSASigner
         ByteBuffer Stemp = ByteBuffer.allocate(b/4+pk.length+m.length);
         Stemp.put(encodepoint(R)).put(pk).put(m);
         BigInteger h = Hint(Stemp.array());
+        h = h.mod(l);
         BigInteger[] ra = scalarmult(B,S);
         BigInteger[] rb = edwards(R,scalarmult(A,h));
         if (!ra[0].equals(rb[0]) || !ra[1].equals(rb[1])) // Constant time comparison
