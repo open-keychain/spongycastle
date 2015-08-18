@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.spongycastle.crypto.CipherParameters;
 import org.spongycastle.crypto.DSA;
@@ -227,15 +228,36 @@ public class EDDSASigner
     }
 
     static BigInteger[] decodepoint(byte[] s) throws Exception {
-        if (s[0] != 0x04)
-            throw new Exception("compressed key is not supported now.");
-        byte[] xbyte = Arrays.copyOfRange(s, 1, 1 + s.length / 2);
-        byte[] ybyte = Arrays.copyOfRange(s, 1 + s.length / 2, s.length);
-        BigInteger x = new BigInteger(xbyte);
-        BigInteger y = new BigInteger(ybyte);
-        BigInteger[] P = {x,y};
-        if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
-        return P;
+        if (s[0] == 0x40) {
+            System.out.println("s:" + s.length);
+            byte[] ytmp = Arrays.copyOfRange(s, 1, s.length);
+            byte[] ybyte = new byte[ytmp.length];
+            for (int i=0; i<ytmp.length; ++i)
+                ybyte[i] = ytmp[ytmp.length - i - 1];
+            int sign = (ybyte[0] & 0x80) > 0 ? 1  : 0;
+            ybyte[0] &= 0x7F;
+            BigInteger y = new BigInteger(ybyte);
+            BigInteger x = xrecover(y);
+            if ((x.testBit(0)?1:0) != sign )
+            {
+                x = q.subtract(x);
+            }
+            System.out.println("x:" + x);
+            System.out.println("y:" + y);
+            BigInteger[] P = {x,y};
+            if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
+            return P;
+        } else if (s[0] == 0x04) {
+            byte[] xbyte = Arrays.copyOfRange(s, 1, (1 + s.length) / 2);
+            byte[] ybyte = Arrays.copyOfRange(s, (1 + s.length) / 2, s.length);
+            BigInteger x = new BigInteger(xbyte);
+            BigInteger y = new BigInteger(ybyte);
+            BigInteger[] P = {x,y};
+            if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
+            return P;
+        } else {
+            throw new Exception("unknown prefix.");
+        }
     }
 
     public BigInteger[] generateSignature(byte[] m) {
@@ -267,12 +289,13 @@ public class EDDSASigner
         BigInteger  Rb,
         BigInteger  S)
     {
+        byte[] Ss = S.toByteArray();
         ECPoint Q = ((ECPublicKeyParameters)key).getQ();
         byte[] pk = Q.getY().toBigInteger().toByteArray();
         BigInteger[] R,A;
         try
         {
-            R = decodepoint(Rb.toByteArray());
+            R = decodepoint(pk);
         }
         catch (Exception e)
         {
