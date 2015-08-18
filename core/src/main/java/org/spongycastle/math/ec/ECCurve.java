@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.Hashtable;
 import java.util.Random;
 
+import org.spongycastle.crypto.signers.EDDSASigner;
 import org.spongycastle.math.ec.endo.ECEndomorphism;
 import org.spongycastle.math.ec.endo.GLVEndomorphism;
 import org.spongycastle.math.field.FiniteField;
@@ -394,10 +395,18 @@ public abstract class ECCurve
         }
         case 0x40:
         {
-            BigInteger Y = BigIntegers.fromUnsignedByteArray(encoded, 1, expectedLength);
-            BigInteger X = new BigInteger("0");
+            BigInteger[] P;
+            try
+            {
+                P = EDDSASigner.decodepoint(encoded);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                throw new IllegalArgumentException("Given point is not on the curve.");
+            }
 
-            p = validatePoint(X, Y);
+            p = validatePoint(P[0], P[1]);
             break;
         }
 

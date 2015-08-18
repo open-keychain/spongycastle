@@ -227,9 +227,8 @@ public class EDDSASigner
         return Rsub.array();
     }
 
-    static BigInteger[] decodepoint(byte[] s) throws Exception {
+    public static BigInteger[] decodepoint(byte[] s) throws Exception {
         if (s[0] == 0x40) {
-            System.out.println("s:" + s.length);
             byte[] ytmp = Arrays.copyOfRange(s, 1, s.length);
             byte[] ybyte = new byte[ytmp.length];
             for (int i=0; i<ytmp.length; ++i)
@@ -242,8 +241,6 @@ public class EDDSASigner
             {
                 x = q.subtract(x);
             }
-            System.out.println("x:" + x);
-            System.out.println("y:" + y);
             BigInteger[] P = {x,y};
             if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
             return P;
@@ -289,22 +286,31 @@ public class EDDSASigner
         BigInteger  Rb,
         BigInteger  S)
     {
-        byte[] Ss = S.toByteArray();
         ECPoint Q = ((ECPublicKeyParameters)key).getQ();
-        byte[] pk = Q.getY().toBigInteger().toByteArray();
-        BigInteger[] R,A;
+
+        // byte[] pk = Q.getY().toBigInteger().toByteArray();
+        // BigInteger[] R,A;
+        BigInteger[] R;
         try
         {
-            R = decodepoint(pk);
+            R = decodepoint(Rb.toByteArray());
         }
         catch (Exception e)
         {
             e.printStackTrace();
             return false;
         }
-        A = new BigInteger[]{Q.getX().toBigInteger(), Q.getY().toBigInteger()};
-        ByteBuffer Stemp = ByteBuffer.allocate(b/4+pk.length+m.length);
-        Stemp.put(R[0].toByteArray()).put(R[1].toByteArray()).put(pk).put(m);
+        BigInteger[] A = new BigInteger[]{Q.getX().toBigInteger(), Q.getY().toBigInteger()};
+
+
+        System.out.println("R[0]:" + R[0]);
+        System.out.println("R[0]:" + R[1]);
+        System.out.println("A[0]:" + A[0]);
+        System.out.println("A[0]:" + A[1]);
+
+
+        ByteBuffer Stemp = ByteBuffer.allocate(b/4+b/8+m.length);
+        Stemp.put(R[0].toByteArray()).put(R[1].toByteArray()).put(A[1].toByteArray()).put(m);
         BigInteger h = Hint(Stemp.array());
         h = h.mod(l);
         ECDomainParameters ec = key.getParameters();
