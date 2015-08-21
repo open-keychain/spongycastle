@@ -18,10 +18,13 @@ import org.spongycastle.crypto.params.ParametersWithRandom;
 import org.spongycastle.math.ec.custom.djb.*;
 import org.spongycastle.math.ec.ECAlgorithms;
 import org.spongycastle.math.ec.ECConstants;
+import org.spongycastle.math.ec.ECFieldElement;
 import org.spongycastle.math.ec.ECMultiplier;
 import org.spongycastle.math.ec.ECPoint;
 import org.spongycastle.math.ec.ReferenceMultiplier;
 import org.spongycastle.math.raw.Nat256;
+
+import javax.xml.bind.DatatypeConverter;
 
 public class EDDSASigner
     implements ECConstants, DSA
@@ -49,6 +52,8 @@ public class EDDSASigner
     public EDDSASigner()
     {
         this.kCalculator = new RandomDSAKCalculator();
+        StackTraceElement ste = Thread.currentThread().getStackTrace()[2];
+        System.out.println("呼び出し元：" + ste.getClassName() + "#" + ste.getMethodName()+":"+ste.getLineNumber());
     }
 
     /**
@@ -59,6 +64,8 @@ public class EDDSASigner
     public EDDSASigner(DSAKCalculator kCalculator)
     {
         this.kCalculator = kCalculator;
+        StackTraceElement ste = Thread.currentThread().getStackTrace()[2];
+        System.out.println("呼び出し元：" + ste.getClassName() + "#" + ste.getMethodName()+":"+ste.getLineNumber());
     }
 
     public void init(
@@ -175,6 +182,12 @@ public class EDDSASigner
         return hsum;
     }
 
+    public static BigInteger Hint_gpg(byte[] m) {
+        byte[] h = H(m);
+        byte[] hbyte = encodeint(new BigInteger(h));
+        return new BigInteger(hbyte);
+    }
+
     static boolean isoncurve(BigInteger[] P) {
         BigInteger x = P[0];
         BigInteger y = P[1];
@@ -185,10 +198,40 @@ public class EDDSASigner
     }
 
     static byte[] encodeint(BigInteger y) {
+        byte[] in = toByteArrayWithoutSign(y);
+        byte[] out = new byte[in.length];
+        for (int i=0;i<in.length;i++) {
+            out[i] = in[in.length - i - 1];
+        }
+        return out;
+    }
+
+    static byte[] encodeint_Ed25519(BigInteger y) {
         byte[] in = y.toByteArray();
         byte[] out = new byte[in.length];
         for (int i=0;i<in.length;i++) {
-            out[i] = in[i];
+            out[i] = in[in.length - i - 1];
+        }
+        return out;
+    }
+
+    // static byte[] encodeintWithPadding(BigInteger y, int size) {
+    //     byte[] in = toByteArrayWithoutSign(y);
+    //     int nsize = in.length;
+    //     ByteBuffer bb = new ByteBuffer.allocate(32);
+    //     for (int i=nsize; i<size; ++i)
+    //         bb.put();
+    //     byte[] out = new byte[in.length];
+    //     for (int i=0;i<in.length;i++) {
+    //         out[i] = in[in.length - i - 1];
+    //     }
+    //     return out;
+    // }
+
+    static byte[] encodeByte(byte[] in) {
+        byte[] out = new byte[in.length];
+        for (int i=0;i<in.length;i++) {
+            out[i] = in[in.length - i - 1];
         }
         return out;
     }
@@ -215,11 +258,18 @@ public class EDDSASigner
     //     return P;
     // }
 
+    public static BigInteger toBigIntegerWithSign(byte[] b) {
+        ByteBuffer bb = ByteBuffer.allocate(b.length + 1);
+        bb.put((byte)0x00).put(b);
+        return new BigInteger(bb.array());
+    }
+
     public static byte[] encodepoint(BigInteger[] P) {
         BigInteger x = P[0];
-        byte[] xbyte = x.toByteArray();
+        byte[] xbyte = toByteArrayWithoutSign(x);
         BigInteger y = P[1];
-        byte[] ybyte = y.toByteArray();
+        byte[] ybyte = toByteArrayWithoutSign(x);
+        // byte[] ybyte = y.toByteArray();
         ByteBuffer Rsub = ByteBuffer.allocate(1 + xbyte.length + ybyte.length);
         Rsub.put((byte)0x04);
         Rsub.put(xbyte);
@@ -227,12 +277,33 @@ public class EDDSASigner
         return Rsub.array();
     }
 
+    public static byte[] encodepoint_gpg(BigInteger[] P) {
+        BigInteger x = P[0];
+        BigInteger y = P[1];
+        byte[] out = encodeint(y);
+        out[out.length - 1] |= (x.testBit(0) ? 0x80 : 0);
+        return out;
+    }
+
     public static BigInteger[] decodepoint(byte[] s) throws Exception {
-        if (s[0] == 0x40) {
-            byte[] ytmp = Arrays.copyOfRange(s, 1, s.length);
+        if (s[0] == 0x04) {
+            byte[] xbyte = Arrays.copyOfRange(s, 1, (1 + s.length) / 2);
+            byte[] ybyte = Arrays.copyOfRange(s, (1 + s.length) / 2, s.length);
+            BigInteger x = new BigInteger(xbyte);
+            BigInteger y = new BigInteger(ybyte);
+            BigInteger[] P = {x,y};
+            if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
+            return P;
+        } else {
+            byte[] ytmp;
+            if (s[0] == 0x40)
+                ytmp = Arrays.copyOfRange(s, 1, s.length);
+            else
+                ytmp = Arrays.copyOfRange(s, 0, s.length);
             byte[] ybyte = new byte[ytmp.length];
             for (int i=0; i<ytmp.length; ++i)
                 ybyte[i] = ytmp[ytmp.length - i - 1];
+            showByte(ytmp, "new encpk");
             int sign = (ybyte[0] & 0x80) > 0 ? 1  : 0;
             ybyte[0] &= 0x7F;
             BigInteger y = new BigInteger(ybyte);
@@ -244,16 +315,6 @@ public class EDDSASigner
             BigInteger[] P = {x,y};
             if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
             return P;
-        } else if (s[0] == 0x04) {
-            byte[] xbyte = Arrays.copyOfRange(s, 1, (1 + s.length) / 2);
-            byte[] ybyte = Arrays.copyOfRange(s, (1 + s.length) / 2, s.length);
-            BigInteger x = new BigInteger(xbyte);
-            BigInteger y = new BigInteger(ybyte);
-            BigInteger[] P = {x,y};
-            if (!isoncurve(P)) throw new Exception("decoding point that is not on curve");
-            return P;
-        } else {
-            throw new Exception("unknown prefix.");
         }
     }
 
@@ -281,48 +342,141 @@ public class EDDSASigner
         return new BigInteger[]{ new BigInteger(encodepoint(R)), S};
     }
 
+    public static void show(BigInteger b, String str) {
+        ByteBuffer bb = ByteBuffer.allocate(b.toByteArray().length + 1);
+        bb.put((byte)0x00).put(b.toByteArray());
+        System.out.println(str + ":" + new BigInteger(bb.array()).toString(16));
+    }
+
+    public static void showByte(byte[] b, String str) {
+        String res = DatatypeConverter.printHexBinary(b);
+        System.out.println(str + ":" + res);
+    }
+
+    private byte[] encodepoint_Ed25519(ECFieldElement z, ECFieldElement x, ECFieldElement y) {
+        ECFieldElement mz = z.invert();
+        ECFieldElement mx = x.multiply(mz);
+        ECFieldElement my = y.multiply(mz);
+        BigInteger bx = mx.toBigInteger();
+        BigInteger by = my.toBigInteger();
+        BigInteger bz = z.toBigInteger();
+        BigInteger mbz = mz.toBigInteger();
+        System.out.println("bx" + bx.toString(16));
+        System.out.println("by" + by.toString(16));
+        System.out.println("bz" + bz.toString(16));
+        System.out.println("mbz" + mbz.toString(16));
+        byte[] byy = encodeint_Ed25519(by);
+        showByte(byy, "byy");
+        if (bx.testBit(0))
+            byy[byy.length - 1] |= 0x80;
+        return byy;
+    }
+
+    public static byte[] toByteArrayWithoutSign(BigInteger b) {
+        byte[] resWithSign = b.toByteArray();
+        byte[] res = Arrays.copyOfRange(resWithSign, 1, resWithSign.length);
+        return res;
+    }
+
+    public byte[] toByteArrayWithPadding(BigInteger b, int size) {
+        ByteBuffer bb = ByteBuffer.allocate(size);
+        byte[] by = toByteArrayWithoutSign(b);
+        for (int i=by.length; i<size; ++i ) {
+            bb.put((byte)0x00);
+        }
+        bb.put(by);
+        return bb.array();
+    }
+
     public boolean verifySignature(
-        byte[]      m,
+        byte[]      mb,
         BigInteger  Rb,
-        BigInteger  S)
+        BigInteger  Sb)
     {
-        ECPoint Q = ((ECPublicKeyParameters)key).getQ();
-
-        // byte[] pk = Q.getY().toBigInteger().toByteArray();
-        // BigInteger[] R,A;
-        BigInteger[] R;
-        try
-        {
-            R = decodepoint(Rb.toByteArray());
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return false;
-        }
-        BigInteger[] A = new BigInteger[]{Q.getX().toBigInteger(), Q.getY().toBigInteger()};
-
-
-        System.out.println("R[0]:" + R[0]);
-        System.out.println("R[0]:" + R[1]);
-        System.out.println("A[0]:" + A[0]);
-        System.out.println("A[0]:" + A[1]);
-
-
-        ByteBuffer Stemp = ByteBuffer.allocate(b/4+b/8+m.length);
-        Stemp.put(R[0].toByteArray()).put(R[1].toByteArray()).put(A[1].toByteArray()).put(m);
-        BigInteger h = Hint(Stemp.array());
-        h = h.mod(l);
         ECDomainParameters ec = key.getParameters();
-        ECPoint pe = ec.getCurve().createPoint(Bx, By, true);
+        // ======
+        // String pkStr = "3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c";
+        // byte[] encoded = DatatypeConverter.parseHexBinary(pkStr);
+        // BigInteger[] A;
+        // try
+        // {
+        //     A = decodepoint(encoded);
+        // }
+        // catch (Exception e)
+        // {
+        //     e.printStackTrace();
+        //     throw new IllegalArgumentException("Given point is not on the curve.");
+        // }
+        // BigInteger RS = new BigInteger(
+        //     "92a009a9f0d4cab8720e820b5f642540a2b27b5416503f8fb3762223ebdb69da085ac1e43e15996e458f3613d0f11d8c387b2eaeb4302aeeb00d291612bb0c00", 16);
+        // // 30440220692A7E70CF78CFB20CBDA7AE73C73D7EC4912BFDC733150C7FB58924E3DB647802203FD8C91384850F6955A1FC67D5EDB61FB60BBDC5721C3380F60A585933578805
+        // byte[] rsbyte = RS.toByteArray();
+        // ByteBuffer rbbuf  = ByteBuffer.allocate(32);
+        // rbbuf.put(Arrays.copyOfRange(rsbyte, 1, 33));
+        // byte[] rbuf = rbbuf.array();
+        // ByteBuffer sbbuf  = ByteBuffer.allocate(32);
+        // sbbuf.put(Arrays.copyOfRange(rsbyte, 33, 64));
+        // byte[] sbuf = sbbuf.array();
+        // byte[] m = new byte[]{(byte)0x72};
+        // ECPoint Q = ec.getCurve().createPoint(A[0], A[1]);
+        // Ed25519FieldElement EncX = (Ed25519FieldElement)Q.getXCoord();
+        // Ed25519FieldElement EncY = (Ed25519FieldElement)Q.getYCoord();
+        // Ed25519FieldElement EncZ = (Ed25519FieldElement)Q.getZCoord(0);
+        // byte[] encpk = encodepoint_Ed25519(EncZ, EncX, EncY);
+        // ======
+        // byte[] m = mb;
+        byte[] newmb = H(mb);
+        String pkStr = "734e0c0df453a6549339d21c876c711ab723bbcf064c60e38eeff275b04aa7f9";
+        byte[] m = DatatypeConverter.parseHexBinary(pkStr);
+        byte[] rbuf = Rb.toByteArray();
+        byte[] sbuf = Sb.toByteArray();
+        ECPoint Q = ((ECPublicKeyParameters)key).getQ();
+        BigInteger[] A = new BigInteger[]{Q.getXCoord().toBigInteger(), Q.getYCoord().toBigInteger()};
+        Ed25519FieldElement EncX = (Ed25519FieldElement)Q.getXCoord();
+        Ed25519FieldElement EncY = (Ed25519FieldElement)Q.getYCoord();
+        Ed25519FieldElement EncZ = (Ed25519FieldElement)Q.getZCoord(0);
+        byte[] encpk = encodepoint_Ed25519(EncZ, EncX, EncY);
+        showByte(encpk, "encpk");
+        showByte(rbuf, "rbuf");
+        showByte(sbuf, "sbuf");
+        showByte(m, "mbuf");
+        showByte(mb, "mbbuf");
+        showByte(newmb, "newmbbuf");
+        // ======
+
+        ECPoint pe = ec.getCurve().createPoint(Bx, By);
         ECMultiplier basePointMultiplier = createBasePointMultiplier();
-        ECPoint p = basePointMultiplier.multiply(pe, S);
+        byte[] encs = encodeByte(sbuf);
+        BigInteger s = new BigInteger(encs);
+
+        ECPoint p = basePointMultiplier.multiply(pe, s);
         BigInteger[] ra = new BigInteger[]{p.getXCoord().toBigInteger(), p.getYCoord().toBigInteger()};
-        ECPoint pe1 = ec.getCurve().createPoint(A[0], A[1], true);
+
+        ByteBuffer Stemp = ByteBuffer.allocate(b/8+b/8+m.length);
+        Stemp.put(rbuf).put(encpk).put(m);
+        byte[] hbyte = H( Stemp.array() );
+        byte[] ench = encodeByte(hbyte);
+        BigInteger h = toBigIntegerWithSign(ench);
+
+        ECPoint pe1 = ec.getCurve().createPoint(A[0], A[1], false);
         ECPoint p1 = basePointMultiplier.multiply(pe1, h);
-        BigInteger[] As = new BigInteger[]{p1.getXCoord().toBigInteger(), p1.getYCoord().toBigInteger()};
-        BigInteger[] rb = edwards(R,As);
-        if (!ra[0].equals(rb[0]) || !ra[1].equals(rb[1])) // Constant time comparison
+
+        ECPoint pe3 = p.subtract(p1);
+
+        Ed25519FieldElement EdX = (Ed25519FieldElement)pe3.getXCoord();
+        Ed25519FieldElement EdY = (Ed25519FieldElement)pe3.getYCoord();
+        Ed25519FieldElement EdZ = (Ed25519FieldElement)pe3.getZCoord(0);
+
+        byte[] rb = encodepoint_Ed25519(EdZ, EdX, EdY);
+
+        BigInteger T = new BigInteger(rb);
+
+        BigInteger R = new BigInteger(rbuf);
+
+        showByte(rb, "rb");
+        showByte(rbuf, "rbuf");
+
+        if (!R.equals(T)) // Constant time comparison
             return false;
         return true;
     }

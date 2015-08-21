@@ -152,7 +152,8 @@ public class SignatureSpi
     {
         public edDSA256()
         {
-            super(new SHA256Digest(), new EDDSASigner(), new StdDSAEncoder());
+            super(new NullDigest(), new EDDSASigner(), new StdDSAEncoder());
+            // super(new SHA256Digest(), new EDDSASigner(), new StdDSAEncoder());
         }
     }
 
@@ -359,7 +360,7 @@ public class SignatureSpi
     {
         public edDSA()
         {
-            super(new SHA1Digest(), new EDDSASigner(), new StdDSAEncoder());
+            super(new SHA512Digest(), new EDDSASigner(), new StdDSAEncoder());
         }
     }
 

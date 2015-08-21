@@ -10,6 +10,8 @@ import org.spongycastle.asn1.x509.X509ObjectIdentifiers;
 import org.spongycastle.crypto.DSA;
 import org.spongycastle.crypto.Digest;
 
+import org.spongycastle.crypto.signers.EDDSASigner;
+
 public abstract class DSABase
     extends SignatureSpi
     implements PKCSObjectIdentifiers, X509ObjectIdentifiers
@@ -38,7 +40,7 @@ public abstract class DSABase
     protected void engineUpdate(
         byte[]  b,
         int     off,
-        int     len) 
+        int     len)
         throws SignatureException
     {
         digest.update(b, off, len);
@@ -64,14 +66,18 @@ public abstract class DSABase
     }
 
     protected boolean engineVerify(
-        byte[]  sigBytes) 
+        byte[]  sigBytes)
         throws SignatureException
     {
         byte[]  hash = new byte[digest.getDigestSize()];
 
         digest.doFinal(hash, 0);
 
+        EDDSASigner.showByte(hash, "m digest");
+
         BigInteger[]    sig;
+
+        EDDSASigner.showByte(sigBytes, "sigBytes");
 
         try
         {

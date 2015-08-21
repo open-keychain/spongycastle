@@ -156,7 +156,7 @@ public class ECAlgorithms
     /**
      * Simple shift-and-add multiplication. Serves as reference implementation
      * to verify (possibly faster) implementations, and for very small scalars.
-     * 
+     *
      * @param p
      *            The point to multiply.
      * @param k
@@ -168,19 +168,25 @@ public class ECAlgorithms
         BigInteger x = k.abs();
         ECPoint q = p.getCurve().getInfinity();
         int t = x.bitLength();
-        if (t > 0)
-        {
-            if (x.testBit(0))
-            {
-                q = p;
-            }
-            for (int i = 1; i < t; i++)
-            {
-                p = p.twice();
-                if (x.testBit(i))
-                {
-                    q = q.add(p);
-                }
+        // if (t > 0)
+        // {
+        //     if (x.testBit(0))
+        //     {
+        //         q = p;
+        //     }
+        //     for (int i = 1; i < t; i++)
+        //     {
+        //         p = p.twice();
+        //         if (x.testBit(i))
+        //         {
+        //             q = q.add(p);
+        //         }
+        //     }
+        // }
+        for (int i = t - 1; i >= 0 ; --i) {
+            q = q.twice();
+            if (x.testBit(i)) {
+                q = q.add(p);
             }
         }
         return k.signum() < 0 ? q.negate() : q;
@@ -381,7 +387,7 @@ public class ECAlgorithms
             pqs[j++] = p;
             pqs[j++] = q;
         }
-        
+
         return ECAlgorithms.implSumOfMultiplies(pqs, abs);
 
     }

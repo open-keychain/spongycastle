@@ -66,6 +66,93 @@ public class Ed25519Point extends ECPoint.AbstractFp
 
         ECCurve curve = this.getCurve();
 
+        Ed25519FieldElement X1 = (Ed25519FieldElement)this.x;
+        Ed25519FieldElement Y1 = (Ed25519FieldElement)this.y;
+        Ed25519FieldElement Z1 = (Ed25519FieldElement)this.zs[0];
+        Ed25519FieldElement X2 = (Ed25519FieldElement)b.getXCoord();
+        Ed25519FieldElement Y2 = (Ed25519FieldElement)b.getYCoord();
+        Ed25519FieldElement Z2 = (Ed25519FieldElement)b.getZCoord(0);
+
+        int[] A = Nat256.create();
+        int[] B = Nat256.create();
+        int[] C = Nat256.create();
+        int[] D = Nat256.create();
+        int[] E = Nat256.create();
+        int[] F = Nat256.create();
+        int[] G = Nat256.create();
+        int[] x3 = Nat256.create();
+        int[] y3 = Nat256.create();
+        int[] z3 = Nat256.create();
+        int[] t1 = Nat256.create();
+        int[] t2 = Nat256.create();
+        int[] d = Ed25519Field.d.clone();
+        int[] posa = Ed25519Field.posa.clone();
+        int[] a = Nat256.create();
+        Ed25519Field.negate(posa, a);
+        int[] one = Nat256.fromBigInteger(BigInteger.ONE);
+
+
+        /* A = Z1 * Z2 */
+        Ed25519Field.multiply(Z1.x, Z2.x, A);
+
+        /* B = A^2 */
+        Ed25519Field.multiply(A, A, B);
+
+        /* C = X1 · X2 */
+        Ed25519Field.multiply(X1.x, X2.x, C);
+
+        /* D = Y1 · Y2 */
+        Ed25519Field.multiply(Y1.x, Y2.x, D);
+
+        /* E = d · C · D */
+        Ed25519Field.multiply(d, C, E);
+        Ed25519Field.multiply(E, D, E);
+
+        /* F = B - E */
+        Ed25519Field.subtract(B, E, F);
+
+        /* G = B + E */
+        Ed25519Field.add(B, E, G);
+
+        /* X_3 = A · F · ((X_1 + Y_1) · (X_2 + Y_2) - C - D) */
+        Ed25519Field.multiply(A, F, x3);
+        Ed25519Field.add(X1.x, Y1.x, t1);
+        Ed25519Field.add(X2.x, Y2.x, t2);
+        Ed25519Field.multiply(t1, t2, t1);
+        Ed25519Field.subtract(t1, C, t1);
+        Ed25519Field.subtract(t1, D, t1);
+        Ed25519Field.multiply(x3, t1, x3);
+
+        /* Y_3 = A · G · (D - aC) */
+        Ed25519Field.multiply(A, G, y3);
+        Ed25519Field.multiply(a, C, t1);
+        Ed25519Field.subtract(D, t1, t1);
+        Ed25519Field.multiply(y3, t1, y3);
+
+        /* Z_3 = F · G */
+        Ed25519Field.multiply(F, G, z3);
+
+        Ed25519FieldElement X3 = new Ed25519FieldElement(x3);
+        Ed25519FieldElement Y3 = new Ed25519FieldElement(y3);
+        Ed25519FieldElement[] Z3 =
+            new Ed25519FieldElement[]{new Ed25519FieldElement(z3), new Ed25519FieldElement(one)};
+
+        return new Ed25519Point(curve, X3, Y3, Z3, this.withCompression);
+    }
+
+    public ECPoint addec(ECPoint b)
+    {
+        if (this.isInfinity())
+        {
+            return b;
+        }
+        if (b.isInfinity())
+        {
+            return this;
+        }
+
+        ECCurve curve = this.getCurve();
+
         Ed25519FieldElement X1 = (Ed25519FieldElement)this.x, Y1 = (Ed25519FieldElement)this.y;
         Ed25519FieldElement X2 = (Ed25519FieldElement)b.getXCoord(), Y2 = (Ed25519FieldElement)b.getYCoord();
 
@@ -103,6 +190,80 @@ public class Ed25519Point extends ECPoint.AbstractFp
     }
 
     public ECPoint twice()
+    {
+        if (this.isInfinity())
+        {
+            return this;
+        }
+
+        ECCurve curve = this.getCurve();
+
+        int[] B = Nat256.create();
+        int[] C = Nat256.create();
+        int[] D = Nat256.create();
+        int[] E = Nat256.create();
+        int[] F = Nat256.create();
+        int[] H = Nat256.create();
+        int[] J = Nat256.create();
+        int[] x3 = Nat256.create();
+        int[] y3 = Nat256.create();
+        int[] z3 = Nat256.create();
+        int[] t1 = Nat256.create();
+        int[] t2 = Nat256.create();
+        int[] posa = Ed25519Field.posa.clone();
+        int[] a = Nat256.create();
+        Ed25519Field.negate(posa, a);
+        int[] one = Nat256.fromBigInteger(BigInteger.ONE);
+
+        Ed25519FieldElement X1 = (Ed25519FieldElement)this.x;
+        Ed25519FieldElement Y1 = (Ed25519FieldElement)this.y;
+        Ed25519FieldElement Z1 = (Ed25519FieldElement)this.zs[0];
+
+
+        /* B = (X_1 + Y_1)^2  */
+        Ed25519Field.add(X1.x, Y1.x, t1);
+        Ed25519Field.multiply(t1, t1, B);
+
+        /* C = X_1^2 */
+        Ed25519Field.multiply(X1.x, X1.x, C);
+
+        /* D = Y_1^2 */
+        Ed25519Field.multiply(Y1.x, Y1.x, D);
+
+        /* E = aC */
+        Ed25519Field.multiply(a, C, E);
+
+        /* F = E + D */
+        Ed25519Field.add(E, D, F);
+
+        /* H = Z_1^2 */
+        Ed25519Field.multiply(Z1.x, Z1.x, H);
+
+        /* J = F - 2H */
+        Ed25519Field.add(H, H, t1);
+        Ed25519Field.subtract(F, t1, J);
+
+        /* X_3 = (B - C - D) · J */
+        Ed25519Field.subtract(B, C, t1);
+        Ed25519Field.subtract(t1, D, t1);
+        Ed25519Field.multiply(t1, J, x3);
+
+        /* Y_3 = F · (E - D) */
+        Ed25519Field.subtract(E, D, t1);
+        Ed25519Field.multiply(F, t1, y3);
+
+        /* Z_3 = F · J */
+        Ed25519Field.multiply(F, J, z3);
+
+        Ed25519FieldElement X3 = new Ed25519FieldElement(x3);
+        Ed25519FieldElement Y3 = new Ed25519FieldElement(y3);
+        Ed25519FieldElement[] Z3 =
+            new Ed25519FieldElement[]{new Ed25519FieldElement(z3), new Ed25519FieldElement(one)};
+
+        return new Ed25519Point(curve, X3, Y3, Z3, this.withCompression);
+    }
+
+    public ECPoint twiceec()
     {
         if (this.isInfinity())
         {
@@ -167,7 +328,7 @@ public class Ed25519Point extends ECPoint.AbstractFp
             return this;
         }
 
-        return new Ed25519Point(this.getCurve(), this.x, this.y.negate(), this.zs, this.withCompression);
+        return new Ed25519Point(this.getCurve(), this.x.negate(), this.y, this.zs, this.withCompression);
     }
 
     protected Ed25519FieldElement calculateJacobianModifiedW(Ed25519FieldElement Z, int[] ZSquared)

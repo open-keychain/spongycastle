@@ -398,7 +398,9 @@ public abstract class ECCurve
             BigInteger[] P;
             try
             {
+                System.out.println("=========START!=========");
                 P = EDDSASigner.decodepoint(encoded);
+                System.out.println("=========FINISH=========");
             }
             catch (Exception e)
             {
@@ -407,6 +409,7 @@ public abstract class ECCurve
             }
 
             p = validatePoint(P[0], P[1]);
+            System.out.println("=========FINISH key=========");
             break;
         }
 
