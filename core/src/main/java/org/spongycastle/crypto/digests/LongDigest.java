@@ -138,7 +138,16 @@ public abstract class LongDigest
         //
         while ((xBufOff != 0) && (len > 0))
         {
-            update(in[inOff]);
+            // update(byte) method inlined here for performance
+            xBuf[xBufOff++] = in[inOff];
+
+            if (xBufOff == xBuf.length)
+            {
+                processWord(xBuf, 0);
+                xBufOff = 0;
+            }
+
+            byteCount1++;
 
             inOff++;
             len--;
@@ -161,7 +170,15 @@ public abstract class LongDigest
         //
         while (len > 0)
         {
-            update(in[inOff]);
+            xBuf[xBufOff++] = in[inOff];
+
+            if (xBufOff == xBuf.length)
+            {
+                processWord(xBuf, 0);
+                xBufOff = 0;
+            }
+
+            byteCount1++;
 
             inOff++;
             len--;
@@ -260,7 +277,9 @@ public abstract class LongDigest
         //
         for (int t = 16; t <= 79; t++)
         {
-            W[t] = Sigma1(W[t - 2]) + W[t - 7] + Sigma0(W[t - 15]) + W[t - 16];
+            W[t] = (((W[t - 2] << 45) | (W[t - 2] >>> 19)) ^ ((W[t - 2] << 3) | (W[t - 2] >>> 61)) ^ (W[t - 2] >>> 6)) + W[t - 7] +
+                    (((W[t - 15] << 63) | (W[t - 15] >>> 1)) ^ ((W[t - 15] << 56) | (W[t - 15] >>> 8)) ^
+                            (W[t - 15] >>> 7)) + W[t - 16];
         }
 
         //
@@ -279,44 +298,60 @@ public abstract class LongDigest
         for(int i = 0; i < 10; i ++)
         {
           // t = 8 * i
-          h += Sum1(e) + Ch(e, f, g) + K[t] + W[t++];
+            h += (((e << 50) | (e >>> 14)) ^ ((e << 46) | (e >>> 18)) ^ ((e << 23) | (e >>> 41))) +
+                    ((e & f) ^ ((~e) & g)) + K[t] + W[t++];
           d += h;
-          h += Sum0(a) + Maj(a, b, c);
+            h += (((a << 36) | (a >>> 28)) ^ ((a << 30) | (a >>> 34)) ^ ((a << 25) | (a >>> 39))) +
+                    ((a & b) ^ (a & c) ^ (b & c));
 
           // t = 8 * i + 1
-          g += Sum1(d) + Ch(d, e, f) + K[t] + W[t++];
+            g += (((d << 50) | (d >>> 14)) ^ ((d << 46) | (d >>> 18)) ^ ((d << 23) | (d >>> 41))) +
+                    ((d & e) ^ ((~d) & f)) + K[t] + W[t++];
           c += g;
-          g += Sum0(h) + Maj(h, a, b);
+            g += (((h << 36) | (h >>> 28)) ^ ((h << 30) | (h >>> 34)) ^ ((h << 25) | (h >>> 39))) +
+                    ((h & a) ^ (h & b) ^ (a & b));
 
           // t = 8 * i + 2
-          f += Sum1(c) + Ch(c, d, e) + K[t] + W[t++];
+            f += (((c << 50) | (c >>> 14)) ^ ((c << 46) | (c >>> 18)) ^ ((c << 23) | (c >>> 41))) +
+                    ((c & d) ^ ((~c) & e)) + K[t] + W[t++];
           b += f;
-          f += Sum0(g) + Maj(g, h, a);
+            f += (((g << 36) | (g >>> 28)) ^ ((g << 30) | (g >>> 34)) ^ ((g << 25) | (g >>> 39))) +
+                    ((g & h) ^ (g & a) ^ (h & a));
 
           // t = 8 * i + 3
-          e += Sum1(b) + Ch(b, c, d) + K[t] + W[t++];
+            e += (((b << 50) | (b >>> 14)) ^ ((b << 46) | (b >>> 18)) ^ ((b << 23) | (b >>> 41))) +
+                    ((b & c) ^ ((~b) & d)) + K[t] + W[t++];
           a += e;
-          e += Sum0(f) + Maj(f, g, h);
+            e += (((f << 36) | (f >>> 28)) ^ ((f << 30) | (f >>> 34)) ^ ((f << 25) | (f >>> 39))) +
+                    ((f & g) ^ (f & h) ^ (g & h));
 
           // t = 8 * i + 4
-          d += Sum1(a) + Ch(a, b, c) + K[t] + W[t++];
+            d += (((a << 50) | (a >>> 14)) ^ ((a << 46) | (a >>> 18)) ^ ((a << 23) | (a >>> 41))) +
+                    ((a & b) ^ ((~a) & c)) + K[t] + W[t++];
           h += d;
-          d += Sum0(e) + Maj(e, f, g);
+            d += (((e << 36) | (e >>> 28)) ^ ((e << 30) | (e >>> 34)) ^ ((e << 25) | (e >>> 39))) +
+                    ((e & f) ^ (e & g) ^ (f & g));
 
           // t = 8 * i + 5
-          c += Sum1(h) + Ch(h, a, b) + K[t] + W[t++];
+            c += (((h << 50) | (h >>> 14)) ^ ((h << 46) | (h >>> 18)) ^ ((h << 23) | (h >>> 41))) +
+                    ((h & a) ^ ((~h) & b)) + K[t] + W[t++];
           g += c;
-          c += Sum0(d) + Maj(d, e, f);
+            c += (((d << 36) | (d >>> 28)) ^ ((d << 30) | (d >>> 34)) ^ ((d << 25) | (d >>> 39))) +
+                    ((d & e) ^ (d & f) ^ (e & f));
 
           // t = 8 * i + 6
-          b += Sum1(g) + Ch(g, h, a) + K[t] + W[t++];
+            b += (((g << 50) | (g >>> 14)) ^ ((g << 46) | (g >>> 18)) ^ ((g << 23) | (g >>> 41))) +
+                    ((g & h) ^ ((~g) & a)) + K[t] + W[t++];
           f += b;
-          b += Sum0(c) + Maj(c, d, e);
+            b += (((c << 36) | (c >>> 28)) ^ ((c << 30) | (c >>> 34)) ^ ((c << 25) | (c >>> 39))) +
+                    ((c & d) ^ (c & e) ^ (d & e));
 
           // t = 8 * i + 7
-          a += Sum1(f) + Ch(f, g, h) + K[t] + W[t++];
+            a += (((f << 50) | (f >>> 14)) ^ ((f << 46) | (f >>> 18)) ^ ((f << 23) | (f >>> 41))) +
+                    ((f & g) ^ ((~f) & h)) + K[t] + W[t++];
           e += a;
-          a += Sum0(b) + Maj(b, c, d);
+            a += (((b << 36) | (b >>> 28)) ^ ((b << 30) | (b >>> 34)) ^ ((b << 25) | (b >>> 39))) +
+                    ((b & c) ^ (b & d) ^ (c & d));
         }
 
         H1 += a;
@@ -336,47 +371,6 @@ public abstract class LongDigest
         {
             W[i] = 0;
         }
-    }
-
-    /* SHA-384 and SHA-512 functions (as for SHA-256 but for longs) */
-    private long Ch(
-        long    x,
-        long    y,
-        long    z)
-    {
-        return ((x & y) ^ ((~x) & z));
-    }
-
-    private long Maj(
-        long    x,
-        long    y,
-        long    z)
-    {
-        return ((x & y) ^ (x & z) ^ (y & z));
-    }
-
-    private long Sum0(
-        long    x)
-    {
-        return ((x << 36)|(x >>> 28)) ^ ((x << 30)|(x >>> 34)) ^ ((x << 25)|(x >>> 39));
-    }
-
-    private long Sum1(
-        long    x)
-    {
-        return ((x << 50)|(x >>> 14)) ^ ((x << 46)|(x >>> 18)) ^ ((x << 23)|(x >>> 41));
-    }
-
-    private long Sigma0(
-        long    x)
-    {
-        return ((x << 63)|(x >>> 1)) ^ ((x << 56)|(x >>> 8)) ^ (x >>> 7);
-    }
-
-    private long Sigma1(
-        long    x)
-    {
-        return ((x << 45)|(x >>> 19)) ^ ((x << 3)|(x >>> 61)) ^ (x >>> 6);
     }
 
     /* SHA-384 and SHA-512 Constants
