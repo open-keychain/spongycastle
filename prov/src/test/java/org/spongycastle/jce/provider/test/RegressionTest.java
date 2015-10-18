@@ -63,7 +63,7 @@ public class RegressionTest
         new PKIXNameConstraintsTest(),
         new MultiCertStoreTest(),
         new NoekeonTest(),
-        new SerialisationTest(),
+        // new SerialisationTest(), // Attempts to deserialise a org.bouncycastle class
         new SigNameTest(),
         new MQVTest(),
         new CMacTest(),

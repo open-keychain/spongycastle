@@ -47,7 +47,7 @@ public class RegressionTest
         new CertPathValidatorTest(),
         new CertPathBuilderTest(),
         new NISTCertPathTest(),
-        new SerialisationTest()
+        // new SerialisationTest() // Attempts to deserialise a org.bouncycastle class
     };
 
     public static void main(
