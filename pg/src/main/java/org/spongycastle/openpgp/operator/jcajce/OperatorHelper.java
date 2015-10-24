@@ -170,31 +170,45 @@ class OperatorHelper
         }
     }
 
+    public Signature createSignature(int keyAlgorithm)
+            throws PGPException
+    {
+        String encAlg = getAlgorithmName(keyAlgorithm);
+
+        return createSignature("NONE" + "with" + encAlg);
+    }
+
     public Signature createSignature(int keyAlgorithm, int hashAlgorithm)
         throws PGPException
     {
+        String encAlg = getAlgorithmName(keyAlgorithm);
+
+        return createSignature(PGPUtil.getDigestName(hashAlgorithm) + "with" + encAlg);
+    }
+
+    private String getAlgorithmName(int keyAlgorithm) throws PGPException {
         String     encAlg;
 
         switch (keyAlgorithm)
         {
-        case PublicKeyAlgorithmTags.RSA_GENERAL:
-        case PublicKeyAlgorithmTags.RSA_SIGN:
-            encAlg = "RSA";
-            break;
-        case PublicKeyAlgorithmTags.DSA:
-            encAlg = "DSA";
-            break;
-        case PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT: // in some malformed cases.
-        case PublicKeyAlgorithmTags.ELGAMAL_GENERAL:
-            encAlg = "ElGamal";
-            break;
-        case PublicKeyAlgorithmTags.ECDSA:
-            encAlg = "ECDSA";
-            break;
-        default:
-            throw new PGPException("unknown algorithm tag in signature:" + keyAlgorithm);
+            case PublicKeyAlgorithmTags.RSA_GENERAL:
+            case PublicKeyAlgorithmTags.RSA_SIGN:
+                encAlg = "RSA";
+                break;
+            case PublicKeyAlgorithmTags.DSA:
+                encAlg = "DSA";
+                break;
+            case PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT: // in some malformed cases.
+            case PublicKeyAlgorithmTags.ELGAMAL_GENERAL:
+                encAlg = "ElGamal";
+                break;
+            case PublicKeyAlgorithmTags.ECDSA:
+                encAlg = "ECDSA";
+                break;
+            default:
+                throw new PGPException("unknown algorithm tag in signature:" + keyAlgorithm);
         }
-
-        return createSignature(PGPUtil.getDigestName(hashAlgorithm) + "with" + encAlg);
+        return encAlg;
     }
+
 }
