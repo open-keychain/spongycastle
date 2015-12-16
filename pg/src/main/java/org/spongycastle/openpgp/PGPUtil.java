@@ -89,7 +89,7 @@ public class PGPUtil
      * @return the corresponding JCA algorithm name.
      * @throws PGPException if the hash algorithm is unknown.
      */
-    static String getDigestName(
+    public static String getDigestName(
         int        hashAlgorithm)
         throws PGPException
     {
